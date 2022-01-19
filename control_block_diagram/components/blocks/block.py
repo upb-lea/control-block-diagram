@@ -82,7 +82,7 @@ class Block(Component):
     def output_bottom(self):
         return self._output_bottom
 
-    def __init__(self, position: Point, fill: str, draw: str, text: Text, size: tuple, space: float, doc = None):
+    def __init__(self, position: Point, fill: str, draw: str, text: Text, size: tuple, space: float, doc=None):
         super().__init__()
         self._position = position if isinstance(position, Center) else position.add_x(size[0] / 2)
         self._fill = fill
