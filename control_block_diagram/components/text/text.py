@@ -1,11 +1,13 @@
 from pylatex import TikZNode, TikZCoordinate, TikZOptions
-from .points import Point
+from ..component import Component
+from control_block_diagram.components.points import Point
 
 
-class Text:
+class Text(Component):
 
     def __init__(self, text: list, position: Point = Point(0, 0), size: tuple = (2, 2), color: str = 'black',
                  fontsize='\\normalsize', doc=None):
+        super().__init__()
         self._text = text if isinstance(text, list) else tuple(str(text))
         self._len_text = len(self._text)
         self._position = position

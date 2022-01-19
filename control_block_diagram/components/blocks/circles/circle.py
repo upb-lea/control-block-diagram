@@ -1,12 +1,11 @@
 from pylatex import TikZDraw, TikZOptions
 import numpy as np
-from ..component import Component
-from ..points import Point
-from ..text import Text
-from ..points import Input, Output, Center
+from ..block import Block
+from ...points import Point, Input, Output, Center
+from ...text import Text
 
 
-class Circle(Component):
+class Circle(Block):
 
     @property
     def size(self):

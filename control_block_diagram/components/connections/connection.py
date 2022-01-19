@@ -1,9 +1,10 @@
 from pylatex import TikZDraw, TikZUserPath, TikZOptions, TikZNode
+from ..component import Component
 from ..points import Point
 from .generate_connection import generate_connection
 
 
-class Connection:
+class Connection(Component):
 
     @property
     def points(self):
@@ -32,6 +33,7 @@ class Connection:
     def __init__(self, points: [Point], arrow: bool = True, text: (str, iter) = None,
                  text_position: (str, iter) = 'middle', text_align: (str, iter) = 'top', distance_x: float = 0.4,
                  distance_y: float = 0.2, doc=None):
+        super().__init__()
         self._points = points
         self._tikz_option = '-latex' if arrow else ''
         self._text = []

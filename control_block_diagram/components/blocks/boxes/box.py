@@ -1,10 +1,10 @@
 from pylatex import TikZDraw, TikZOptions
-from ..component import Component
-from ..points import Point, Input, Output, Center
-from ..text import Text
+from ..block import Block
+from ...points import Point, Input, Output, Center
+from ...text import Text
 
 
-class Box(Component):
+class Box(Block):
     def __init__(self, position: (Point, Center), size: tuple = (2.5, 1.5), text: Text = None, fill: str = 'white',
                  draw: str = 'black', space: float = 1.5, input_left: int = 1, input_top: int = 0, input_right: int = 0,
                  input_bottom: int = 0, output_left: int = 0, output_top: int = 0, output_right: int = 1,
