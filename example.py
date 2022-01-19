@@ -1,4 +1,4 @@
-from controller_diagrams import *
+from control_block_diagram import *
 
 
 diagram = ControllerDiagram()
