@@ -35,6 +35,14 @@ class Block(Component):
         return self._position.add(-self._size_x / 2, self._size_y / 2)
 
     @property
+    def top_right(self):
+        return self._position.add(self._size_x / 2, self._size_y / 2)
+
+    @property
+    def bottom_left(self):
+        return self._position.add(-self._size_x / 2, -self._size_y / 2)
+
+    @property
     def bottom_right(self):
         return self._position.add(self._size_x / 2, -self._size_y / 2)
 
@@ -82,7 +90,8 @@ class Block(Component):
     def output_bottom(self):
         return self._output_bottom
 
-    def __init__(self, position: Point, fill: str, draw: str, text: Text, size: tuple, space: float, doc=None):
+    def __init__(self, position: Point, fill: str, draw: str, text: Text, size: tuple, space: float,
+                 in_out_space_right_left: float, in_out_space_top_bottom: float, doc=None):
         super().__init__()
         self._position = position if isinstance(position, Center) else position.add_x(size[0] / 2)
         self._fill = fill
@@ -90,6 +99,8 @@ class Block(Component):
         self._text = text
         (self._size_x, self._size_y) = size
         self._space = space
+        self._space_rl = in_out_space_right_left
+        self._space_tb = in_out_space_top_bottom
         self._input = []
         self._output = []
 
@@ -103,6 +114,16 @@ class Block(Component):
         self._output_bottom = []
         self._output_right = []
 
+        self._input_left_text = []
+        self._input_top_text = []
+        self._input_bottom_text = []
+        self._input_right_text = []
+
+        self._output_left_text = []
+        self._output_top_text = []
+        self._output_bottom_text = []
+        self._output_right_text = []
+
         self._plot_inout = False
 
         if isinstance(self._text, Text):
@@ -112,9 +133,59 @@ class Block(Component):
         if doc is not None:
             doc.append(self)
 
+    def set_in_output(self, input_dict, output_dict, get_position):
+        self._input_left = get_position(input_dict['left'])
+        self._input_top = get_position(input_dict['top'])
+        self._input_right = get_position(input_dict['right'])
+        self._input_bottom = get_position(input_dict['bottom'])
+
+        self._output_left = get_position(output_dict['left'])
+        self._output_top = get_position(output_dict['top'])
+        self._output_right = get_position(output_dict['right'])
+        self._output_bottom = get_position(output_dict['bottom'])
+
+        #self._input_left_text = [Text([text], input_.add_x(self._input_output_space_right_left)) for input_, text in
+        #                         zip(self._input_left, input_dict['left'][-1])]
+
+        set_text = lambda point, text, space, add: [Text([text_], add(point_, space)) for point_, text_ in
+                                                    zip(point, text)]
+
+        self._input_left_text = set_text(self._input_left, input_dict['left'][-1], self._space_rl, Point.add_x)
+        self._input_top_text = set_text(self._input_top, input_dict['top'][-1][::-1], -self._space_tb, Point.add_y)
+        self._input_right_text = set_text(self._input_right, input_dict['right'][-1], -self._space_rl, Point.add_x)
+        self._input_bottom_text = set_text(self._input_top, input_dict['bottom'][-1][::-1], self._space_tb, Point.add_y)
+        '''
+        self._input_top_text = [Text([text], input_.add_y(-self._space_tb)) for input_, text in
+                                zip(self._input_top, input_dict['top'][-1][::-1])]
+        self._input_right_text = [Text([text], input_.add_x(-self._space_rl)) for input_, text in
+                                  zip(self._input_right, input_dict['right'][-1])]
+        self._input_bottom_text = [Text([text], input_.add_y(self._space_tb)) for input_, text in
+                                   zip(self._input_bottom, input_dict['bottom'][-1][::-1])]
+        '''
+        self._output_left_text = [Text([text], output_.add_x(self._space_rl)) for output_, text in
+                                  zip(self._output_left, output_dict['left'][-1])]
+        self._output_top_text = [Text([text], output_.add_y(-self._space_tb)) for output_, text in
+                                 zip(self._output_top, output_dict['top'][-1][::-1])]
+        self._output_right_text = [Text([text], output_.add_x(-self._space_rl)) for output_, text
+                                   in zip(self._output_right, output_dict['right'][-1])]
+        self._output_bottom_text = [Text([text], output_.add_y(self._space_tb)) for output_, text
+                                    in zip(self._output_bottom, output_dict['bottom'][-1][::-1])]
+
+    @staticmethod
+    def set_in_out_text(self, point, text, space, add):
+        return
+
     def build(self, pic):
         if isinstance(self._text, Text):
             self._text.build(pic)
+
+        for text in self._input_left_text + self._input_top_text + self._input_right_text + self._input_bottom_text:
+            if isinstance(text, Text):
+                text.build(pic)
+
+        for text in self._output_left_text + self._output_top_text + self._output_right_text + self._output_bottom_text:
+            if isinstance(text, Text):
+                text.build(pic)
 
         if self._plot_inout:
             for input_ in self.input:

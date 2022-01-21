@@ -6,7 +6,7 @@ class PMSM(PredefinedComponent):
     def __init__(self, position, doc=None):
         super().__init__()
         self._position = position
-        self._circle = Circle(position, text=Text(['PMSM']), input_left=3, output_right=0)
+        self._circle = Circle(position, text=Text(['PMSM']), inputs=dict(left=3))
 
         if doc is not None:
             doc.append(self)
