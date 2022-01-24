@@ -36,6 +36,7 @@ class Triangle(Block):
                 outputs.get('bottom_text', ()))}
 
         self.set_in_output(input_dict, output_dict, self._get_in_output)
+        self._text.define(position=self.position.add_x(-self.size[0] / 4))
 
     def _get_in_output(self, in_out_dict):
         pos_func, direction, size, count, in_out, _ = in_out_dict

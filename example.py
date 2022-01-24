@@ -35,5 +35,7 @@ connection_10 = Connection.connect(circle_3.output_top, circle_4.input_bottom, d
 connection_11 = Connection.connect(circle_4.output_right[0], circle_4.output_right[0].add_x(1),
                                    text=r'$\underline{u}^{*}_\mathrm{ff}$', distance_y=0.3, doc=diagram)
 
+PMSM(Point(3, -5), doc=diagram)
+
 diagram.build()
 diagram.show()

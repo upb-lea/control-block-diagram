@@ -1,2 +1,2 @@
 from .predefined_components import PredefinedComponent
-from .electrical_motors import PMSM
+from .electric_motors import PMSM, SCIM
