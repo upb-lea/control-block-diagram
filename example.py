@@ -7,7 +7,7 @@ text_1 = Text(['EMF Feedforward'], Point(3.5, 1), size=(5, 2), doc=diagram)
 
 connection_1 = Connection([Point(0, 0), Point(1, 0)], text=r'$\underline{u}^*$', distance_y=0.3, doc=diagram)
 
-box_select = Box(Point(1, -1.5), (1, 1.5), Text(['Select']), outputs=dict(right=2), in_out_space=0.3, doc=diagram)
+box_select = Box(Point(1, -1.5), (1, 1.5), Text(['Select']), outputs=dict(right=2, right_space=0.3), doc=diagram)
 connection_2 = Connection.connect(box_select.input_left[0].add_x(-1), box_select.input_left[0], text=r'$\underline{s}$',
                                   doc=diagram)
 
@@ -34,8 +34,6 @@ connection_9 = Connection.connect(connection_1.end, circle_4.input_left[0], doc=
 connection_10 = Connection.connect(circle_3.output_top, circle_4.input_bottom, doc=diagram)
 connection_11 = Connection.connect(circle_4.output_right[0], circle_4.output_right[0].add_x(1),
                                    text=r'$\underline{u}^{*}_\mathrm{ff}$', distance_y=0.3, doc=diagram)
-
-PMSM(Point(3, -5), doc=diagram)
 
 diagram.build()
 diagram.show()

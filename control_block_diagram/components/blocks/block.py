@@ -90,17 +90,21 @@ class Block(Component):
     def output_bottom(self):
         return self._output_bottom
 
-    def __init__(self, position: Point, fill: str, draw: str, text: Text, size: tuple, space: float,
-                 in_out_space_right_left: float, in_out_space_top_bottom: float, doc=None):
+    def __init__(self, position: Point, fill: str, draw: str, text: Text, size: tuple, space: float, doc=None):
         super().__init__()
-        self._position = position if isinstance(position, Center) else position.add_x(size[0] / 2)
+        self._position = position
+
+        if isinstance(position, Center):
+            if position.vertical:
+                self._position = self._position.add_x(size[0] / 2)
+            if position.horizontal:
+                self._position = self._position.sub_y(size[1] / 2)
+
         self._fill = fill
         self._draw = draw
         self._text = text
         (self._size_x, self._size_y) = size
         self._space = space
-        self._space_rl = in_out_space_right_left
-        self._space_tb = in_out_space_top_bottom
         self._input = []
         self._output = []
 
@@ -144,23 +148,23 @@ class Block(Component):
         self._output_right = get_position(output_dict['right'])
         self._output_bottom = get_position(output_dict['bottom'])
 
-        #self._input_left_text = [Text([text], input_.add_x(self._input_output_space_right_left)) for input_, text in
-        #                         zip(self._input_left, input_dict['left'][-1])]
+        self._input_left_text = self.set_in_out_text(self._input_left, input_dict['left'][-1], input_dict['left'][-2],
+                                                     Point.add_x)
+        self._input_top_text = self.set_in_out_text(self._input_top, input_dict['top'][-1][::-1], input_dict['top'][-2],
+                                                    Point.sub_y)
+        self._input_right_text = self.set_in_out_text(self._input_right, input_dict['right'][-1],
+                                                      input_dict['right'][-2], Point.sub_x)
+        self._input_bottom_text = self.set_in_out_text(self._input_top, input_dict['bottom'][-1][::-1],
+                                                       input_dict['bottom'][-2], Point.add_y)
 
-        set_text = lambda point, text, space, add: [Text([text_], add(point_, space)) for point_, text_ in
-                                                    zip(point, text)]
-
-        self._input_left_text = set_text(self._input_left, input_dict['left'][-1], self._space_rl, Point.add_x)
-        self._input_top_text = set_text(self._input_top, input_dict['top'][-1][::-1], -self._space_tb, Point.add_y)
-        self._input_right_text = set_text(self._input_right, input_dict['right'][-1], -self._space_rl, Point.add_x)
-        self._input_bottom_text = set_text(self._input_top, input_dict['bottom'][-1][::-1], self._space_tb, Point.add_y)
-        '''
-        self._input_top_text = [Text([text], input_.add_y(-self._space_tb)) for input_, text in
-                                zip(self._input_top, input_dict['top'][-1][::-1])]
-        self._input_right_text = [Text([text], input_.add_x(-self._space_rl)) for input_, text in
-                                  zip(self._input_right, input_dict['right'][-1])]
-        self._input_bottom_text = [Text([text], input_.add_y(self._space_tb)) for input_, text in
-                                   zip(self._input_bottom, input_dict['bottom'][-1][::-1])]
+        self._output_left_text = self.set_in_out_text(self._output_left, output_dict['left'][-1],
+                                                      output_dict['left'][-2],  Point.add_x)
+        self._output_top_text = self.set_in_out_text(self._output_top, output_dict['top'][-1][::-1],
+                                                     output_dict['top'][-2], Point.sub_y)
+        self._output_right_text = self.set_in_out_text(self._output_right, output_dict['right'][-1],
+                                                       output_dict['right'][-2], Point.sub_x)
+        self._output_bottom_text = self.set_in_out_text(self._input_top, output_dict['bottom'][-1][::-1],
+                                                        output_dict['bottom'][-2], Point.add_y)
         '''
         self._output_left_text = [Text([text], output_.add_x(self._space_rl)) for output_, text in
                                   zip(self._output_left, output_dict['left'][-1])]
@@ -170,10 +174,11 @@ class Block(Component):
                                    in zip(self._output_right, output_dict['right'][-1])]
         self._output_bottom_text = [Text([text], output_.add_y(self._space_tb)) for output_, text
                                     in zip(self._output_bottom, output_dict['bottom'][-1][::-1])]
-
+        '''
     @staticmethod
-    def set_in_out_text(self, point, text, space, add):
-        return
+    def set_in_out_text(point, text, space, add):
+        space = 0 if space is None else space
+        return [Text([text_], add(point_, space)) for point_, text_ in zip(point, text)]
 
     def build(self, pic):
         if isinstance(self._text, Text):

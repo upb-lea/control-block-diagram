@@ -59,6 +59,15 @@ class Point(Component):
     def add_y(self, val: float, direction: str = None):
         return Point(self.x, self.y + val, direction)
 
+    def sub(self, x: float, y: float, direction: str = None):
+        return Point(self.x - x, self.y - y, direction)
+
+    def sub_x(self, val: float, direction: str = None):
+        return Point(self.x - val, self.y, direction)
+
+    def sub_y(self, val: float, direction: str = None):
+        return Point(self.x, self.y - val, direction)
+
     @staticmethod
     def merge(p1, p2):
         return Point(p1.x, p2.x)
