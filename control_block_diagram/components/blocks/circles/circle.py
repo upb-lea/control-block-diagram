@@ -14,7 +14,6 @@ class Circle(Block):
     def __init__(self, position: (Point, Center), radius: float = 1, text: Text = None, draw: str = 'black',
                  fill: str = 'white', space: float = 1.5, inputs: dict = dict(left=1),
                  outputs: dict = dict(right=1), doc=None):
-
         super().__init__(Center.convert(position), fill, draw, text, (radius * 2, radius * 2), space, doc)
         self._radius = radius
 
@@ -37,26 +36,28 @@ class Circle(Block):
                                   outputs.get('bottom_text', ()))}
 
         self.set_in_output(input_dict, output_dict, self._get_in_output)
-        self._input_top = self._input_top[::-1]
-        self._input_bottom = self._input_bottom[::-1]
-        self._output_top = self._output_top[::-1]
-        self._output_bottom = self._output_bottom[::-1]
 
     def _get_in_output(self, in_out_dict):
         direction, sign, count, in_out, space, _ = in_out_dict
-        space = 0 if space is None else space
+        y_list = Block.get_in_out_list(self._radius * 2, space, count)
+        '''
+        if count > 1:
+            space = (self._radius * 2 - 2 * space) / (count - 1)
+            y_list = [(0.5 - (i / (count - 1))) * space for i in range(count)]
+        elif count == 1:
+            y_list = [self._radius]
+        else:
+            y_list = []
+        '''
         if direction in ['west', 'east']:
-            space = (self._radius * 2 - 2 * space) / max(count - 1, 1)
-            y_list = [(0.5 - (y + 1) / (count + 1)) * space for y in range(count)]
             x_list = [sign * np.cos(np.arcsin(y / self._radius)) * self._radius for y in y_list]
         elif direction in ['north', 'south']:
-            space = (self._radius * 2 - 2 * space) / max(count - 1, 1)
-            x_list = [(0.5 - (x + 1) / (count + 1)) * space for x in range(count)]
+            x_list = y_list
             y_list = [sign * np.sin(np.arccos(x / self._radius)) * self._radius for x in x_list]
         return [in_out.convert(self._position.add(x, y, direction)) for x, y in zip(x_list, y_list)]
 
     def build(self, pic):
         circle = TikZDraw([self._position.tikz, 'circle'],
-                          options=TikZOptions(radius=str(self._radius) + 'cm', draw=self._draw, fill=self._fill))
+                          options=TikZOptions(radius=str(self._radius) + 'cm', **self._tikz_options))
         pic.append(circle)
         super().build(pic)

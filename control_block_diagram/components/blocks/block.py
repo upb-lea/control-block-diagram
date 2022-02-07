@@ -55,6 +55,10 @@ class Block(Component):
         return self._input_left + self._input_top + self._input_right + self._input_bottom
 
     @property
+    def input_dict(self):
+        return dict(left=self._input_left, top=self._input_top, right=self._input_right, bottom=self._input_bottom)
+
+    @property
     def input_left(self):
         return self._input_left
 
@@ -75,6 +79,10 @@ class Block(Component):
         return self._output_right + self._output_bottom + self._output_left + self._output_top
 
     @property
+    def output_dict(self):
+        return dict(left=self._output_left, top=self._output_top, right=self._output_right, bottom=self._output_bottom)
+
+    @property
     def output_left(self):
         return self._output_left
 
@@ -90,8 +98,12 @@ class Block(Component):
     def output_bottom(self):
         return self._output_bottom
 
-    def __init__(self, position: Point, fill: str, draw: str, text: Text, size: tuple, space: float, doc=None):
-        super().__init__()
+    @property
+    def border(self):
+        return dict(left=self.left.x, top=self.top.y, right=self.right.x, bottom=self.bottom.y)
+
+    def __init__(self, position: Point, fill: str, draw: str, text: (Text, str), size: tuple, space: float, doc=None):
+        super().__init__(doc)
         self._position = position
 
         if isinstance(position, Center):
@@ -100,9 +112,13 @@ class Block(Component):
             if position.horizontal:
                 self._position = self._position.sub_y(size[1] / 2)
 
-        self._fill = fill
-        self._draw = draw
-        self._text = text
+        self._tikz_options = dict()
+        if isinstance(fill, str):
+            self._tikz_options['fill'] = fill
+        if isinstance(draw, str):
+            self._tikz_options['draw'] = draw
+
+        self._text = text if isinstance(text, Text) else Text(text)
         (self._size_x, self._size_y) = size
         self._space = space
         self._input = []
@@ -134,9 +150,6 @@ class Block(Component):
             self._text.define(position=Point(self._position.x, self._position.y),
                               size=(max(self._size_x, 0.3), max(self._size_y, 0.3)))
 
-        if doc is not None:
-            doc.append(self)
-
     def set_in_output(self, input_dict, output_dict, get_position):
         self._input_left = get_position(input_dict['left'])
         self._input_top = get_position(input_dict['top'])
@@ -165,20 +178,29 @@ class Block(Component):
                                                        output_dict['right'][-2], Point.sub_x)
         self._output_bottom_text = self.set_in_out_text(self._input_top, output_dict['bottom'][-1][::-1],
                                                         output_dict['bottom'][-2], Point.add_y)
-        '''
-        self._output_left_text = [Text([text], output_.add_x(self._space_rl)) for output_, text in
-                                  zip(self._output_left, output_dict['left'][-1])]
-        self._output_top_text = [Text([text], output_.add_y(-self._space_tb)) for output_, text in
-                                 zip(self._output_top, output_dict['top'][-1][::-1])]
-        self._output_right_text = [Text([text], output_.add_x(-self._space_rl)) for output_, text
-                                   in zip(self._output_right, output_dict['right'][-1])]
-        self._output_bottom_text = [Text([text], output_.add_y(self._space_tb)) for output_, text
-                                    in zip(self._output_bottom, output_dict['bottom'][-1][::-1])]
-        '''
+
+        self._input_top = self._input_top[::-1]
+        self._input_bottom = self._input_bottom[::-1]
+        self._output_top = self._output_top[::-1]
+        self._output_bottom = self._output_bottom[::-1]
+
+    @staticmethod
+    def get_in_out_list(size: float, space: float, number: int):
+        if number == 0:
+            return []
+        if number == 1:
+            return [0]
+        if space is None or space == 0:
+            space = size / (number + 1)
+        elif size < space * (number - 1):
+            space = size / (number - 1)
+        begin = (number - 1) * space
+        return [begin - ((number - 1) / 2 + i) * space for i in range(number)]
+
     @staticmethod
     def set_in_out_text(point, text, space, add):
         space = 0 if space is None else space
-        return [Text([text_], add(point_, space)) for point_, text_ in zip(point, text)]
+        return [Text(text_, add(point_, space)) for point_, text_ in zip(point, text)]
 
     def build(self, pic):
         if isinstance(self._text, Text):

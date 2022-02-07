@@ -6,8 +6,8 @@ import os
 
 class ControllerDiagram:
 
-    def __init__(self, data_type=('pdf',)):
-        self._data_type = tuple(data_type)
+    def __init__(self, data_type: (str, tuple, list) = ('pdf',)):
+        self._data_type = data_type if isinstance(data_type, (tuple, list)) else [data_type]
         self._pdf_name = None
         self._clean_tex = 'tex' not in self._data_type
         self._components = []

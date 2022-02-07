@@ -5,10 +5,16 @@ from control_block_diagram.components.points import Point
 
 class Text(Component):
 
-    def __init__(self, text: list, position: Point = Point(0, 0), size: tuple = (2, 2), color: str = 'black',
-                 fontsize='\\normalsize', doc=None):
-        super().__init__()
-        self._text = text if isinstance(text, list) else tuple(str(text))
+    def __init__(self, text: any, position: Point = Point(0, 0), size: tuple = (2, 2), color: str = 'black',
+                 fontsize=r'\normalsize', doc=None):
+        super().__init__(doc)
+        if isinstance(text, (list, tuple)):
+            self._text = text
+        elif text is None:
+            self._text = ['']
+        else:
+            self._text = [str(text)]
+
         self._len_text = len(self._text)
         self._position = position
         self._size = size
@@ -17,8 +23,6 @@ class Text(Component):
         self._font_size = fontsize
         self._options = {'align': 'center', 'text width': str(self._size[0]) + 'cm', 'text': self._color,
                          'font': self._font_size}
-        if doc is not None:
-            doc.append(self)
 
     def define(self, **kwargs):
         self._position = kwargs.get('position', self._position)

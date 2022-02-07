@@ -34,23 +34,16 @@ class Triangle(Block):
         self.set_in_output(input_dict, output_dict, self._get_in_output)
         self._text.define(position=self.position.add_x(-self.size[0] / 4))
 
-    def _get_in_output(self, in_out_dict):
+    @staticmethod
+    def _get_in_output(in_out_dict):
         pos_func, direction, size, count, in_out, space, _ = in_out_dict
-        if space is None:
-            return [in_out.convert(pos_func((0.5 - (i + 1) / (count + 1)) * size, direction)) for i in range(count)]
-        else:
-            if count > 1:
-                space = (size - 2 * space) / (count - 1)
-                return [in_out.convert(pos_func((0.5 - (i / (count - 1))) * space, direction)) for i in range(count)]
-            elif count == 1:
-                return [in_out.convert(pos_func(0, direction))]
-            else:
-                return []
+        pos_list = Block.get_in_out_list(size, space, count)
+        return [in_out.convert(pos_func(pos, direction)) for pos in pos_list]
 
     def build(self, pic):
 
         triangle = TikZDraw([self.top_left.tikz, '--', self.right.tikz, '--', self.bottom_left.tikz, '--',
-                             self.top_left.tikz], TikZOptions(draw=self._draw, fill=self._fill))
+                             self.top_left.tikz], TikZOptions(self._tikz_options))
         pic.append(triangle)
         super().build(pic)
 

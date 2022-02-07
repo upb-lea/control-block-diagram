@@ -24,6 +24,10 @@ class Point(Component):
     def direction(self):
         return self._direction
 
+    @property
+    def abs(self):
+        return (self.x ** 2 + self.y ** 2) ** 0.5
+
     def __init__(self, x: float, y: float, direction: str = None):
         super().__init__()
         self._coordinate = (x, y)
@@ -70,7 +74,7 @@ class Point(Component):
 
     @staticmethod
     def merge(p1, p2):
-        return Point(p1.x, p2.x)
+        return Point(p1.x, p2.y)
 
     @staticmethod
     def get_mid(p1, p2):
