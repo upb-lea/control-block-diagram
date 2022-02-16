@@ -1,40 +1,60 @@
 import control_block_diagram
 from control_block_diagram.components import *
+from control_block_diagram.predefined_components import *
 
 
-diagram = control_block_diagram.ControllerDiagram()
+document = control_block_diagram.ControllerDiagram()
 
-text_1 = Text(['EMF Feedforward'], Point(3.5, 1), size=(5, 2), doc=diagram)
+dq_to_alpha_beta = DqToAlphaBetaTransformation(Point(0, 0), doc=document)
+pwm = Box(dq_to_alpha_beta.position.add_x(2.5), size=(1.5, 1.2), text='PWM', inputs=dict(left=2, left_space=0.6),
+          outputs=dict(right=3, right_space=0.3), doc=document)
 
-connection_1 = Connection([Point(0, 0), Point(1, 0)], text=r'$\underline{u}^*$', distance_y=0.3, doc=diagram)
+Connection.connect(dq_to_alpha_beta.output_right, pwm.input_left, text=[r'$u^*_{s \alpha}$', r'$u^*_{s \beta}$'],
+                   doc=document)
 
-box_select = Box(Point(1, -1.5), (1, 1.5), 'Select', outputs=dict(right=2, right_space=0.3), doc=diagram)
-connection_2 = Connection.connect(box_select.input_left[0].add_x(-1), box_select.input_left[0], text=r'$\underline{s}$',
-                                  doc=diagram)
+converter = Converter(pwm.position.add_x(2.5), input='left', input_number=3, input_space=0.3, output='bottom',
+                      output_number=3, additional_inputs=dict(top=2, top_space=0.8), doc=document)
 
-circle_1 = Circle(box_select.output[1].add_x(1.5), 0.2, r'$\times$', inputs=dict(left=1, bottom=1), doc=diagram)
-connection_3 = Connection.connect(box_select.output[1], circle_1.input_left[0], text=r'$\underline{i}$', doc=diagram)
-box_l = Box(Center.convert(circle_1.input_bottom[0].add_y(-1)), (1, 1), r'$\underline{L}$', inputs=dict(),
-            outputs=dict(top=1), doc=diagram)
-connection_4 = Connection.connect(box_l.output, circle_1.input_bottom, doc=diagram)
+Connection.connect(pwm.output_right, converter.input_left, text=['$S_{a,b,c}$', '', ''], doc=document)
+con_1 = [Connection.connect(input.add_y(0.7), input, arrow=False, doc=document) for input in converter.input_top]
+Connection.connect(con_1[1].begin.add(-0.1, 0.1), con_1[0].begin.add(0.1, 0.1), text=r'$u_{dc}$', doc=document)
 
-circle_2 = Circle(circle_1.output_right[0].add_x(1.5), 0.2, Text(['+']), inputs=dict(left=1, bottom=1), outputs=dict(top=1),
-                  doc=diagram)
-connection_5 = Connection.connect(circle_1.output, circle_2.input_left, doc=diagram)
-box_psi = Box(Center.convert(circle_2.input_bottom[0].add_y(-1)), (1, 1), r'$\underline{\Psi}$', inputs=dict(),
-              outputs=dict(top=1), doc=diagram)
-connection_6 = Connection.connect(box_psi.output, circle_2.input_bottom, doc=diagram)
+pmsm = PMSM(converter.position.sub_y(5), size=1.3, input='top', doc=document)
+con_2 = Connection.connect(converter.output_bottom, pmsm.input_top, arrow=False, doc=document)
 
-circle_3 = Circle(Center(circle_2.output_top[0].x, box_select.output_right[0].y), 0.2, r'$\times$', inputs=dict(bottom=1, left=1),
-                  outputs=dict(top=1), doc=diagram)
-connection_7 = Connection.connect(box_select.output_right[0], circle_3.input_left[0], text=r'$\omega$', doc=diagram)
-connection_8 = Connection.connect(circle_2.output_top, circle_3.input_bottom, doc=diagram)
+abc_to_alpha_beta = AbcToAlphaBetaTransformation(pwm.position.sub_y(3.5), size=1.2, input='right', output='left',
+                                                 doc=document)
 
-circle_4 = Circle(Center(circle_3.output_top[0].x, connection_1.end.y), 0.2, '+', inputs=dict(left=1, bottom=1), doc=diagram)
-connection_9 = Connection.connect(connection_1.end, circle_4.input_left[0], doc=diagram)
-connection_10 = Connection.connect(circle_3.output_top, circle_4.input_bottom, doc=diagram)
-connection_11 = Connection.connect(circle_4.output_right[0], circle_4.output_right[0].add_x(1),
-                                   text=r'$\underline{u}^{*}_\mathrm{ff}$', distance_y=0.3, doc=diagram)
+Connection.connect_to_line(con_2, abc_to_alpha_beta.input_right, fill=False, text=[r'$i_{s a,b,c}$', '', ''],
+                           doc=document)
 
-diagram.build()
-diagram.show()
+alpha_beta_to_dq = AlphaBetaToDqTransformation(Point.merge(dq_to_alpha_beta.position, abc_to_alpha_beta.position),
+                                               size=1.2, input='right', output='left', doc=document)
+
+Connection.connect(pmsm.output_left, alpha_beta_to_dq.input_bottom, text=r'$\epsilon$', text_position=(1, 'middle'),
+                   text_align='right', doc=document)
+
+Connection.connect(abc_to_alpha_beta.output, alpha_beta_to_dq.input_right, text=[r'$i_{s \alpha}$', r'$i_{s \beta}$'],
+                   doc=document)
+
+add = Add(Point.get_mid(dq_to_alpha_beta.position, alpha_beta_to_dq.position), inputs=dict(bottom=1, right=1),
+          outputs=dict(top=1), doc=document)
+
+Connection.connect(alpha_beta_to_dq.output_top, add.input_bottom, text=r'$\epsilon$', text_align='right', doc=document)
+Connection.connect(add.output_top, dq_to_alpha_beta.input_bottom, doc=document)
+
+box_T_a = Box(add.position.add_x(1.5), size=(1, 0.8), text=r'$1,5 T_a$', inputs=dict(right=1), outputs=dict(left=1),
+              doc=document)
+
+Connection.connect(box_T_a.output, add.input_right, text=r'$\Delta \epsilon$', doc=document)
+Connection.connect(box_T_a.input[0].add_x(0.5), box_T_a.input[0], text=r'$\omega$', text_position='start',
+                   text_align='right', distance_x=0.2, doc=document)
+
+top_left = Point(add.border['left'], box_T_a.border['top']).add(-0.1, 0.1)
+bottom_right = box_T_a.bottom_right.add(0.1, -0.1)
+box_winkelvorhalt = Box([top_left, bottom_right], fill=False, draw='blue', doc=document)
+
+text_winkelvorhalt = Text('Winkelvorhalt', position=box_winkelvorhalt.bottom_right.sub_y(0.2), doc=document)
+
+document.build()
+document.show()
