@@ -13,8 +13,8 @@ class Circle(Block):
 
     def __init__(self, position: (Point, Center), radius: float = 1, text: Text = None, draw: str = 'black',
                  fill: str = 'white', space: float = 1.5, inputs: dict = dict(left=1),
-                 outputs: dict = dict(right=1), doc=None):
-        super().__init__(Center.convert(position), fill, draw, text, (radius * 2, radius * 2), space, doc)
+                 outputs: dict = dict(right=1)):
+        super().__init__(Center.convert(position), fill, draw, text, (radius * 2, radius * 2), space)
         self._radius = radius
 
         input_dict = {'left': ('west', -1, inputs.get('left', 0), Input, inputs.get('left_space', None),
@@ -40,15 +40,7 @@ class Circle(Block):
     def _get_in_output(self, in_out_dict):
         direction, sign, count, in_out, space, _ = in_out_dict
         y_list = Block.get_in_out_list(self._radius * 2, space, count)
-        '''
-        if count > 1:
-            space = (self._radius * 2 - 2 * space) / (count - 1)
-            y_list = [(0.5 - (i / (count - 1))) * space for i in range(count)]
-        elif count == 1:
-            y_list = [self._radius]
-        else:
-            y_list = []
-        '''
+
         if direction in ['west', 'east']:
             x_list = [sign * np.cos(np.arcsin(y / self._radius)) * self._radius for y in y_list]
         elif direction in ['north', 'south']:

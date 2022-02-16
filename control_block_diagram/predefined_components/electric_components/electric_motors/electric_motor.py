@@ -1,14 +1,14 @@
 from control_block_diagram.predefined_components.predefined_components import PredefinedComponent
-from control_block_diagram.components import Box, Circle, Text, Center, Point, Path
+from control_block_diagram.components import Box, Circle, Path
 from pylatex import TikZDraw, TikZUserPath, TikZOptions
 
 
 class ElectricMotor(PredefinedComponent):
     def __init__(self, position, text, size=1.5, input: str = 'left', input_number: int = 1, output: str = 'left',
-                 orientation: str = 'bottom', input_space: float = 0.3, doc=None):
-        super().__init__(position, doc)
+                 orientation: str = 'bottom', input_space: float = 0.3):
+        super().__init__(position)
         self._size = size
-        self._circle = Circle(position, radius=size / 2, text=Text(text),
+        self._circle = Circle(position, radius=size / 2, text=text,
                               inputs={input: input_number, input + '_space': input_space},
                               outputs={orientation: 2, orientation + '_space': size * 0.2})
 
@@ -57,8 +57,10 @@ class ElectricMotor(PredefinedComponent):
         self.input = self._circle.input_dict
         self.output = self._circle_2.output_dict
 
+'''
     def build(self, pic):
         self._box.build(pic)
         self._circle_2.build(pic)
         self._circle.build(pic)
         self._path.build(pic)
+'''

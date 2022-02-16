@@ -1,6 +1,7 @@
 from pylatex import Document, TikZ
 from tkinter import filedialog
 from tkinter import *
+from .components.component import set_document
 import os
 import tempfile
 import subprocess
@@ -14,6 +15,7 @@ class ControllerDiagram:
         self._clean_tex = 'tex' not in self._data_type
         self._components = []
         self._subprocess = None
+        set_document(self)
 
     def append(self, component):
         if isinstance(component, (list, tuple)):

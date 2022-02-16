@@ -102,8 +102,8 @@ class Block(Component):
     def border(self):
         return dict(left=self.left.x, top=self.top.y, right=self.right.x, bottom=self.bottom.y)
 
-    def __init__(self, position: Point, fill: str, draw: str, text: (Text, str), size: tuple, space: float, doc=None):
-        super().__init__(doc)
+    def __init__(self, position: Point, fill: str, draw: str, text: (Text, str), size: tuple, space: float):
+        super().__init__()
         self._position = position
 
         if isinstance(position, Center):
@@ -203,17 +203,6 @@ class Block(Component):
         return [Text(text_, add(point_, space)) for point_, text_ in zip(point, text)]
 
     def build(self, pic):
-        if isinstance(self._text, Text):
-            self._text.build(pic)
-
-        for text in self._input_left_text + self._input_top_text + self._input_right_text + self._input_bottom_text:
-            if isinstance(text, Text):
-                text.build(pic)
-
-        for text in self._output_left_text + self._output_top_text + self._output_right_text + self._output_bottom_text:
-            if isinstance(text, Text):
-                text.build(pic)
-
         if self._plot_inout:
             for input_ in self.input:
                 circle = TikZDraw([input_.tikz, 'circle'],

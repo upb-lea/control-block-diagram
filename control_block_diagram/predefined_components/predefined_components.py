@@ -144,8 +144,8 @@ class PredefinedComponent(Component):
         self._right = border_dict['right']
         self._bottom = border_dict['bottom']
 
-    def __init__(self, position, doc=None):
-        super().__init__(doc)
+    def __init__(self, position):
+        super().__init__()
 
         self._position = position
 

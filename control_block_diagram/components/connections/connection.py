@@ -33,8 +33,8 @@ class Connection(Component):
 
     def __init__(self, points: [Point], arrow: bool = True, text: (str, iter) = None,
                  text_position: (str, iter) = 'middle', text_align: (str, iter) = 'top', distance_x: float = 0.4,
-                 distance_y: float = 0.2, line_width: str = 'thin', doc=None):
-        super().__init__(doc)
+                 distance_y: float = 0.2, line_width: str = 'thin'):
+        super().__init__()
         self._points = points
         self._tikz_option = '-latex' if arrow else ''
         self._line_width = line_width
@@ -79,6 +79,7 @@ class Connection(Component):
                 path.append(point)
             path.append(TikZUserPath('edge', TikZOptions(self._tikz_option, self._line_width)))
             path.append(self._points[-1].tikz)
+
         text_position = self.get_text_position()
         for text, pos in zip(self._text, text_position):
             pic.append(TikZNode(text=text, at=pos, handle='box', options=self._text_kwargs))
@@ -137,7 +138,7 @@ class Connection(Component):
                         for p1_, p2_ in zip(p1, p2)]
         else:
             connection = Connection(generate_connection(p1, p2, space_x, space_y, start_direction, end_direction),
-                                    arrow, line_width=line_width, doc=doc)
+                                    arrow, line_width=line_width)
             if text is not None:
                 connection.add_text(text, text_position, text_align, distance_x, distance_y)
             return connection
@@ -145,15 +146,15 @@ class Connection(Component):
     @staticmethod
     def connect_to_line(con, point, arrow=True, line_width: str = 'thin', text: (str, iter) = None,
                         text_position: (str, iter) = 'middle', text_align: (str, iter) = 'top', distance_x: float = 0.4,
-                        distance_y: float = 0.2, fill='black', draw=0.1, doc=None):
+                        distance_y: float = 0.2, fill='black', draw=0.1):
         if isinstance(con, (list, tuple)) and isinstance(point, (list, tuple)):
             if isinstance(text, (list, tuple)):
                 return [Connection.connect_to_line(con_, point_, arrow, line_width, text_, text_position, text_align,
-                                                   distance_x, distance_y, fill, draw, doc) for con_, point_, text_ in
+                                                   distance_x, distance_y, fill, draw) for con_, point_, text_ in
                         zip(con, point, text)]
             else:
                 return [Connection.connect_to_line(con_, point_, arrow, line_width, text, text_position, text_align,
-                                                   distance_x, distance_y, fill, draw, doc)
+                                                   distance_x, distance_y, fill, draw)
                         for con_, point_ in zip(con, point)]
         else:
             if con.begin.x == con.end.x:
@@ -172,9 +173,9 @@ class Connection(Component):
                 raise Exception("Line and Point can't be connected")
 
             if isinstance(draw, float):
-                circle = Circle(point_start, radius=draw, fill=fill, outputs={output: 1}, doc=doc)
+                circle = Circle(point_start, radius=draw, fill=fill, outputs={output: 1})
                 point_start = circle.output[0]
 
             return Connection.connect(point_start, point, arrow=arrow, line_width=line_width, text=text,
                                       text_position=text_position, text_align=text_align, distance_x=distance_x,
-                                      distance_y=distance_y, doc=doc)
+                                      distance_y=distance_y)

@@ -7,9 +7,8 @@ from ...text import Text
 class Triangle(Block):
 
     def __init__(self, position: (Point, Center), size: tuple = (2.5, 1.5), text: Text = None, fill: str = 'white',
-                 draw: str = 'black', space: float = 1.5, inputs: dict = dict(left=1), outputs: dict = dict(right=1),
-                 doc=None):
-        super().__init__(position, fill, draw, text, size, space, doc)
+                 draw: str = 'black', space: float = 1.5, inputs: dict = dict(left=1), outputs: dict = dict(right=1)):
+        super().__init__(position, fill, draw, text, size, space)
 
         input_dict = {'left': (
             self.left.add_y, 'west', self._size_y, inputs.get('left', 0), Input, inputs.get('left_space', None), inputs.get('left_text', ())),

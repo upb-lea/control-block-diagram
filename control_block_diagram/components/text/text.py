@@ -6,8 +6,8 @@ from control_block_diagram.components.points import Point
 class Text(Component):
 
     def __init__(self, text: any, position: Point = Point(0, 0), size: tuple = (2, 2), color: str = 'black',
-                 fontsize=r'\normalsize', doc=None):
-        super().__init__(doc)
+                 fontsize=r'\normalsize'):
+        super().__init__()
         if isinstance(text, (list, tuple)):
             self._text = text
         elif text is None:
@@ -36,4 +36,5 @@ class Text(Component):
 
     def build(self, pic):
         for text, pos in zip(self._text, self._text_position):
-            pic.append(TikZNode(text=text, at=pos, handle='box', options=TikZOptions(self._options)))
+            if text != '':
+                pic.append(TikZNode(text=text, at=pos, handle='box', options=TikZOptions(self._options)))
