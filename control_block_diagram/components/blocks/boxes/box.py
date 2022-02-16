@@ -1,16 +1,16 @@
 from pylatex import TikZDraw, TikZOptions
 from ..block import Block
-from ...points import Point, Input, Output
+from ...points import Point, Input, Output, Center
 from ...text import Text
 
 
 class Box(Block):
-    def __init__(self, position: (Point, [Point, Point]), size: tuple = (2.5, 1.5), text: Text = None, fill: str = 'white',
+    def __init__(self, position: (Point, list, tuple), size: tuple = (2.5, 1.5), text: Text = None, fill: str = 'white',
                  draw: str = 'black', space: float = 1.5, inputs: dict = dict(left=1), outputs: dict = dict(right=1),
                  doc=None):
 
         if isinstance(position, (list, tuple)):
-            size = ((position[1] - position[0]).x, (position[0] - position[1]).y)
+            size = (abs((position[1] - position[0]).x), abs((position[1] - position[0]).y))
             position = Point.get_mid(*position)
 
         super().__init__(position, fill, draw, text, size, space, doc)

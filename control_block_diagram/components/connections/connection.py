@@ -137,7 +137,7 @@ class Connection(Component):
                         for p1_, p2_ in zip(p1, p2)]
         else:
             connection = Connection(generate_connection(p1, p2, space_x, space_y, start_direction, end_direction),
-                                    arrow, line_width, doc=doc)
+                                    arrow, line_width=line_width, doc=doc)
             if text is not None:
                 connection.add_text(text, text_position, text_align, distance_x, distance_y)
             return connection

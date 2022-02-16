@@ -1,7 +1,8 @@
-from control_block_diagram import *
+import control_block_diagram
+from control_block_diagram.components import *
 
 
-diagram = ControllerDiagram()
+diagram = control_block_diagram.ControllerDiagram()
 
 text_1 = Text(['EMF Feedforward'], Point(3.5, 1), size=(5, 2), doc=diagram)
 

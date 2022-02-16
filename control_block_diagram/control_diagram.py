@@ -2,15 +2,18 @@ from pylatex import Document, TikZ
 from tkinter import filedialog
 from tkinter import *
 import os
+import tempfile
+import subprocess
 
 
 class ControllerDiagram:
 
-    def __init__(self, data_type: (str, tuple, list) = ('pdf',)):
+    def __init__(self, data_type: (str, tuple, list) = ()):
         self._data_type = data_type if isinstance(data_type, (tuple, list)) else [data_type]
         self._pdf_name = None
         self._clean_tex = 'tex' not in self._data_type
         self._components = []
+        self._subprocess = None
 
     def append(self, component):
         if isinstance(component, (list, tuple)):
@@ -35,6 +38,16 @@ class ControllerDiagram:
     def show(self):
         if self._pdf_name is not None:
             os.system(self._pdf_name)
+        if 'pdf' not in self._data_type:
+            os.remove(self._pdf_name)
+
+    def open(self):
+        if self._pdf_name is not None:
+            self._subprocess = subprocess.Popen(self._pdf_name, shell=True, stdout=subprocess.PIPE)
+
+    def close(self):
+        if len(self._data_type) == 0:
+            os.remove(self._pdf_name)
 
     def _get_filename(self):
         win = Tk()
@@ -51,3 +64,5 @@ class ControllerDiagram:
             else:
                 raise ValueError(
                     f'The file type {data_type} is not supported. Use the Portable Document Format (pdf) or Tex Document (tex) file type.')
+        if 'pdf' not in self._data_type:
+            yield tempfile.gettempdir() + r'\ControlBlockDiagram.pdf'
