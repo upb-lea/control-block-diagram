@@ -1,7 +1,8 @@
 from pylatex import TikZCoordinate
+from ..component import Component
 
 
-class Point:
+class Point(Component):
 
     @property
     def coordinate(self):
@@ -23,7 +24,12 @@ class Point:
     def direction(self):
         return self._direction
 
+    @property
+    def abs(self):
+        return (self.x ** 2 + self.y ** 2) ** 0.5
+
     def __init__(self, x: float, y: float, direction: str = None):
+        super().__init__()
         self._coordinate = (x, y)
         self._direction = direction if direction in ['north', 'west', 'south', 'east'] else False
 
@@ -57,11 +63,19 @@ class Point:
     def add_y(self, val: float, direction: str = None):
         return Point(self.x, self.y + val, direction)
 
+    def sub(self, x: float, y: float, direction: str = None):
+        return Point(self.x - x, self.y - y, direction)
+
+    def sub_x(self, val: float, direction: str = None):
+        return Point(self.x - val, self.y, direction)
+
+    def sub_y(self, val: float, direction: str = None):
+        return Point(self.x, self.y - val, direction)
+
     @staticmethod
     def merge(p1, p2):
-        return Point(p1.x, p2.x)
+        return Point(p1.x, p2.y)
 
     @staticmethod
     def get_mid(p1, p2):
         return Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2)
-      

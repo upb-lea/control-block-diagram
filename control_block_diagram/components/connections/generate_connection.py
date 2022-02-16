@@ -2,6 +2,7 @@ from ..points import Point
 
 
 def generate_connection(p1, p2, space_x, space_y, start_direction=None, end_direction=None):
+
     start_direction = get_start_direction(p1, p2) if start_direction is None else start_direction
     end_direction = get_end_direction(p1, p2) if end_direction is None else end_direction
     directions = start_direction + '_' + end_direction
@@ -13,9 +14,9 @@ def get_start_direction(p1: Point, p2: Point) -> str:
         return p1.direction
     elif p1.x == p2.x:
         if p1.y < p2.y:
-            return 'south'
-        else:
             return 'north'
+        else:
+            return 'south'
     elif p1.x < p2.x:
         return 'east'
     else:
@@ -27,9 +28,9 @@ def get_end_direction(p1: Point, p2: Point) -> str:
         return p2.direction
     elif p1.x == p2.x:
         if p1.y < p2.y:
-            return 'north'
-        else:
             return 'south'
+        else:
+            return 'north'
     elif p1.x < p2.x:
         return 'west'
     else:
