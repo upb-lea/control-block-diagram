@@ -1,6 +1,7 @@
 from control_block_diagram import ControllerDiagram
-from control_block_diagram.components import *
-from control_block_diagram.predefined_components import *
+from control_block_diagram.components import Box, Connection, Point, Text
+from control_block_diagram.predefined_components import DqToAlphaBetaTransformation, Converter, PMSM,\
+    AbcToAlphaBetaTransformation, AlphaBetaToDqTransformation, Add
 
 
 if __name__ == '__main__':
@@ -16,7 +17,7 @@ if __name__ == '__main__':
                           output_number=3, additional_inputs=dict(top=2, top_space=0.8))
 
     Connection.connect(pwm.output_right, converter.input_left, text=['$S_{a,b,c}$', '', ''])
-    con_1 = [Connection.connect(input.add_y(0.7), input, arrow=False, doc=document) for input in converter.input_top]
+    con_1 = [Connection.connect(input.add_y(0.7), input, arrow=False) for input in converter.input_top]
     Connection.connect(con_1[1].begin.add(-0.1, 0.1), con_1[0].begin.add(0.1, 0.1), text=r'$u_{dc}$')
 
     pmsm = PMSM(converter.position.sub_y(5), size=1.3, input='top')

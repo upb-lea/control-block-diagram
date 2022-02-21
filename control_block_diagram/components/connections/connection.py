@@ -34,11 +34,12 @@ class Connection(Component):
 
     def __init__(self, points: [Point], arrow: bool = True, text: str = None,
                  text_position: str = 'middle', text_align: str = 'top', distance_x: float = 0.4,
-                 distance_y: float = 0.2, line_width: str = 'thin'):
+                 distance_y: float = 0.2, **connection_configuration):
         super().__init__()
         self._points = points
         self._tikz_option = '-latex' if arrow else ''
-        self._line_width = line_width
+        self._line_width = connection_configuration.get('line_width', self._configuration['line_width'])
+        self._draw = connection_configuration.get('draw', self._configuration['draw'])
         self._text = Text(text, self.get_text_position(text_position, text_align, distance_x, distance_y))
 
     def __add__(self, other):
@@ -55,10 +56,10 @@ class Connection(Component):
         with pic.create(TikZDraw()) as path:
             path.append(self.tikz[0])
             for point in self.tikz[1:-1]:
-                path.append(TikZUserPath('edge', TikZOptions(self._line_width)))
+                path.append(TikZUserPath('edge', TikZOptions(self._draw, self._line_width)))
                 path.append(point)
                 path.append(point)
-            path.append(TikZUserPath('edge', TikZOptions(self._tikz_option, self._line_width)))
+            path.append(TikZUserPath('edge', TikZOptions(self._draw, self._line_width, self._tikz_option)))
             path.append(self._points[-1].tikz)
 
     def get_text_position(self, text_pos, align, distance_x, distance_y):
@@ -119,7 +120,7 @@ class Connection(Component):
             return connection
 
     @staticmethod
-    def connect_to_line(con, point, arrow=True, line_width: str = 'thin', text: (str, iter) = None,
+    def connect_to_line(con, point, arrow: bool = True, line_width: str = 'thin', text: (str, iter) = None,
                         text_position: (str, iter) = 'middle', text_align: (str, iter) = 'top', distance_x: float = 0.4,
                         distance_y: float = 0.2, fill='black', draw=0.1):
         if isinstance(con, (list, tuple)) and isinstance(point, (list, tuple)):

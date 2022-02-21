@@ -4,32 +4,46 @@ from tkinter import *
 from .components.component import Component
 import os
 import tempfile
-import subprocess
 from .pdf_viewer import PDFViewer
 
 
 class ControllerDiagram:
 
-    def __init__(self, data_type: (str, tuple, list) = ()):
+    def __init__(self, data_type: (str, tuple, list) = (), **configuration):
         self._data_type = data_type if isinstance(data_type, (tuple, list)) else [data_type]
         self._pdf_name = None
         self._clean_tex = 'tex' not in self._data_type
         self._components = []
-        self._subprocess = None
         self._pdf_viewer = None
+        self._configuration_input = configuration
+        self._configuration = dict()
         self.set_document()
+        self._min_x = 0
+        self._min_y = 0
+        self._max_x = 0
+        self._max_y = 0
 
     def set_document(self):
         Component._document = self
+        self._configuration['draw'] = self._configuration_input.get('draw', 'black')
+        self._configuration['fill'] = self._configuration_input.get('fill', 'white')
+        self._configuration['line_width'] = self._configuration_input.get('line_width', 'thin')
+        self._configuration['fontsize'] = self._configuration_input.get('fontsize', r'\normalsize')
+        self._configuration['text_color'] = self._configuration_input.get('text_color', 'black')
+
+        Component.configuration = self._configuration
 
     def append(self, component):
         if isinstance(component, (list, tuple)):
-            self._components.extend(component)
+            for comp in component:
+                self.append(comp)
         else:
             self._components.append(component)
 
     def build(self):
-        doc = Document(page_numbers=False, geometry_options={'landscape': True, 'includeheadfoot': False})
+        doc = Document(page_numbers=False, geometry_options={'landscape': True, 'includeheadfoot': False,
+                                                             'top': '0.3cm', 'left': '0.3cm', 'paperwidth': '12cm',
+                                                             'paperheight': '12cm'})
         with doc.create(TikZ()) as pic:
             for component in self._components:
                 component.build(pic)

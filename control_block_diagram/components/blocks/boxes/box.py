@@ -5,14 +5,14 @@ from ...text import Text
 
 
 class Box(Block):
-    def __init__(self, position: (Point, list, tuple), size: tuple = (2.5, 1.5), text: Text = None, fill: str = 'white',
-                 draw: str = 'black', space: float = 1.5, inputs: dict = dict(left=1), outputs: dict = dict(right=1)):
+    def __init__(self, position: (Point, list, tuple), size: tuple = (2.5, 1.5), text: (Text, str) = None,
+                 inputs: dict = dict(left=1), outputs: dict = dict(right=1), **block_configuration):
 
         if isinstance(position, (list, tuple)):
             size = (abs((position[1] - position[0]).x), abs((position[1] - position[0]).y))
             position = Point.get_mid(*position)
 
-        super().__init__(position, fill, draw, text, size, space)
+        super().__init__(position, text, size, **block_configuration)
 
         input_dict = {'left': (
             self.left.add_y, 'west', self._size_y, inputs.get('left', 0), Input, inputs.get('left_space', None),
@@ -44,6 +44,6 @@ class Box(Block):
 
     def build(self, pic):
         box = TikZDraw([self.top_left.tikz, 'rectangle', self.bottom_right.tikz],
-                       TikZOptions(**self._tikz_options))
+                       TikZOptions(self._line_width, **self._tikz_options))
         pic.append(box)
         super().build(pic)

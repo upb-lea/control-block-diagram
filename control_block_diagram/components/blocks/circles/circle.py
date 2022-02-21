@@ -11,10 +11,9 @@ class Circle(Block):
     def size(self):
         return self._radius, self._radius
 
-    def __init__(self, position: (Point, Center), radius: float = 1, text: Text = None, draw: str = 'black',
-                 fill: str = 'white', space: float = 1.5, inputs: dict = dict(left=1),
-                 outputs: dict = dict(right=1)):
-        super().__init__(Center.convert(position), fill, draw, text, (radius * 2, radius * 2), space)
+    def __init__(self, position: (Point, Center), radius: float = 1, text: (Text, str) = None, inputs: dict = dict(left=1),
+                 outputs: dict = dict(right=1), **block_configuration):
+        super().__init__(Center.convert(position), text, (radius * 2, radius * 2), **block_configuration)
         self._radius = radius
 
         input_dict = {'left': ('west', -1, inputs.get('left', 0), Input, inputs.get('left_space', None),
@@ -50,6 +49,6 @@ class Circle(Block):
 
     def build(self, pic):
         circle = TikZDraw([self._position.tikz, 'circle'],
-                          options=TikZOptions(radius=str(self._radius) + 'cm', **self._tikz_options))
+                          options=TikZOptions(self._line_width, radius=str(self._radius) + 'cm', **self._tikz_options))
         pic.append(circle)
         super().build(pic)

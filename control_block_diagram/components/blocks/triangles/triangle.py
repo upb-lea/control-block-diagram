@@ -6,9 +6,9 @@ from ...text import Text
 
 class Triangle(Block):
 
-    def __init__(self, position: (Point, Center), size: tuple = (2.5, 1.5), text: Text = None, fill: str = 'white',
-                 draw: str = 'black', space: float = 1.5, inputs: dict = dict(left=1), outputs: dict = dict(right=1)):
-        super().__init__(position, fill, draw, text, size, space)
+    def __init__(self, position: (Point, Center), size: tuple = (2.5, 1.5), text: (Text, str) = None,
+                 inputs: dict = dict(left=1), outputs: dict = dict(right=1), **block_configuration):
+        super().__init__(position, text, size, **block_configuration)
 
         input_dict = {'left': (
             self.left.add_y, 'west', self._size_y, inputs.get('left', 0), Input, inputs.get('left_space', None), inputs.get('left_text', ())),
@@ -42,7 +42,7 @@ class Triangle(Block):
     def build(self, pic):
 
         triangle = TikZDraw([self.top_left.tikz, '--', self.right.tikz, '--', self.bottom_left.tikz, '--',
-                             self.top_left.tikz], TikZOptions(self._tikz_options))
+                             self.top_left.tikz], TikZOptions(self._line_width, **self._tikz_options))
         pic.append(triangle)
         super().build(pic)
 

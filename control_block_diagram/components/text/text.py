@@ -5,8 +5,7 @@ from control_block_diagram.components.points import Point
 
 class Text(Component):
 
-    def __init__(self, text: any = '', position: Point = Point(0, 0), size: tuple = (2, 2), color: str = 'black',
-                 fontsize=r'\normalsize'):
+    def __init__(self, text: any = '', position: Point = Point(0, 0), size: tuple = (2, 1), **text_configuration):
         super().__init__()
 
         if text is None:
@@ -19,8 +18,9 @@ class Text(Component):
         self._text_position = [TikZCoordinate(self._position.x,
                                               self._position[1] + self._size[1] / 2 - (i + 1) / (self._len_text + 1) *
                                               self._size[1]) for i in range(self._len_text)]
-        self._color = color
-        self._font_size = fontsize
+
+        self._color = text_configuration.get('text_color', self._configuration['text_color'])
+        self._font_size = text_configuration.get('fontsize', self._configuration['fontsize'])
         self._options = {'align': 'center', 'text width': str(self._size[0]) + 'cm', 'text': self._color,
                          'font': self._font_size}
 
@@ -30,6 +30,7 @@ class Text(Component):
         self._font_size = kwargs.get('fontsize', self._font_size)
         self._options = {'align': 'center', 'text width': str(self._size[0]) + 'cm', 'text': self._color,
                          'font': self._font_size}
+
         top = self._position[1] + self._size[1] / 2
         self._text_position = [TikZCoordinate(self._position.x, top - (i + 1) / (self._len_text + 1) * self._size[1])
                                for i in range(self._len_text)]
@@ -62,4 +63,4 @@ class Text(Component):
     def build(self, pic):
         for text, pos in zip(self._text, self._text_position):
             if text != '':
-                pic.append(TikZNode(text=text, at=pos, handle='box', options=TikZOptions(self._options)))
+                pic.append(TikZNode(text=text, at=pos, handle='box', options=TikZOptions(**self._options)))
