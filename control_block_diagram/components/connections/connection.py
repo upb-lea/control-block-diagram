@@ -100,37 +100,40 @@ class Connection(Component):
 
     @staticmethod
     def connect(p1: Point, p2: Point, space_x: float = 1, space_y: float = 1, arrow: bool = True,
-                line_width: str = 'thin', text: (str, iter) = None, text_position: (str, iter) = 'middle',
+                text: (str, iter) = None, text_position: (str, iter) = 'middle',
                 text_align: (str, iter) = 'top', distance_x: float = 0.4,  distance_y: float = 0.2,
-                start_direction: str = None, end_direction: str = None, doc=None):
+                start_direction: str = None, end_direction: str = None, **connection_configuration):
         if isinstance(p1, (list, tuple)) and isinstance(p2, (list, tuple)):
             if isinstance(text, (list, tuple)):
-                return [Connection.connect(p1_, p2_, space_x, space_y, arrow, line_width, text_, text_position,
-                                           text_align, distance_x, distance_y, start_direction, end_direction, doc)
+                return [Connection.connect(p1_, p2_, space_x, space_y, arrow, text_, text_position,
+                                           text_align, distance_x, distance_y, start_direction, end_direction,
+                                           **connection_configuration)
                         for p1_, p2_, text_ in zip(p1, p2, text)]
             else:
-                return [Connection.connect(p1_, p2_, space_x, space_y, arrow, line_width, text, text_position,
-                                           text_align, distance_x, distance_y, start_direction, end_direction, doc)
+                return [Connection.connect(p1_, p2_, space_x, space_y, arrow, text, text_position,
+                                           text_align, distance_x, distance_y, start_direction, end_direction,
+                                           **connection_configuration)
                         for p1_, p2_ in zip(p1, p2)]
         else:
             connection = Connection(generate_connection(p1, p2, space_x, space_y, start_direction, end_direction),
-                                    arrow, line_width=line_width, text=text, text_position=text_position,
-                                    text_align=text_align)
+                                    arrow, text=text, text_position=text_position,
+                                    text_align=text_align, **connection_configuration)
 
             return connection
 
     @staticmethod
-    def connect_to_line(con, point, arrow: bool = True, line_width: str = 'thin', text: (str, iter) = None,
+    def connect_to_line(con, point, arrow: bool = True, text: (str, iter) = None,
                         text_position: (str, iter) = 'middle', text_align: (str, iter) = 'top', distance_x: float = 0.4,
-                        distance_y: float = 0.2, fill='black', draw=0.1):
+                        distance_y: float = 0.2, fill='black', draw=0.1, **connection_configuration):
         if isinstance(con, (list, tuple)) and isinstance(point, (list, tuple)):
             if isinstance(text, (list, tuple)):
-                return [Connection.connect_to_line(con_, point_, arrow, line_width, text_, text_position, text_align,
-                                                   distance_x, distance_y, fill, draw) for con_, point_, text_ in
+                return [Connection.connect_to_line(con_, point_, arrow, text_, text_position, text_align,
+                                                   distance_x, distance_y, fill, draw, **connection_configuration)
+                        for con_, point_, text_ in
                         zip(con, point, text)]
             else:
-                return [Connection.connect_to_line(con_, point_, arrow, line_width, text, text_position, text_align,
-                                                   distance_x, distance_y, fill, draw)
+                return [Connection.connect_to_line(con_, point_, arrow, text, text_position, text_align,
+                                                   distance_x, distance_y, fill, draw, **connection_configuration)
                         for con_, point_ in zip(con, point)]
         else:
             if con.begin.x == con.end.x:
@@ -152,6 +155,6 @@ class Connection(Component):
                 circle = Circle(point_start, radius=draw, fill=fill, outputs={output: 1})
                 point_start = circle.output[0]
 
-            return Connection.connect(point_start, point, arrow=arrow, line_width=line_width, text=text,
+            return Connection.connect(point_start, point, arrow=arrow, text=text,
                                       text_position=text_position, text_align=text_align, distance_x=distance_x,
-                                      distance_y=distance_y)
+                                      distance_y=distance_y, **connection_configuration)
