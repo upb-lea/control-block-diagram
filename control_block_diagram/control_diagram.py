@@ -1,10 +1,11 @@
 from pylatex import Document, TikZ
 from tkinter import filedialog
 from tkinter import *
-from .components.component import set_document
+from .components.component import Component
 import os
 import tempfile
 import subprocess
+from .pdf_viewer import PDFViewer
 
 
 class ControllerDiagram:
@@ -15,7 +16,11 @@ class ControllerDiagram:
         self._clean_tex = 'tex' not in self._data_type
         self._components = []
         self._subprocess = None
-        set_document(self)
+        self._pdf_viewer = None
+        self.set_document()
+
+    def set_document(self):
+        Component._document = self
 
     def append(self, component):
         if isinstance(component, (list, tuple)):
@@ -39,15 +44,18 @@ class ControllerDiagram:
 
     def show(self):
         if self._pdf_name is not None:
-            os.system(self._pdf_name)
+            self._pdf_viewer = PDFViewer(self._pdf_name)
+            self._pdf_viewer.show_pdf()
         if 'pdf' not in self._data_type:
             os.remove(self._pdf_name)
 
     def open(self):
         if self._pdf_name is not None:
-            self._subprocess = subprocess.Popen(self._pdf_name, shell=True, stdout=subprocess.PIPE)
+            self._pdf_viewer = PDFViewer(self._pdf_name)
+            self._pdf_viewer.open_pdf()
 
     def close(self):
+        self._pdf_viewer.close_pdf()
         if len(self._data_type) == 0:
             os.remove(self._pdf_name)
 

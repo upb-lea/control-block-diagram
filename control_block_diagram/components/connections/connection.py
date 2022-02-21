@@ -2,6 +2,7 @@ from pylatex import TikZDraw, TikZUserPath, TikZOptions, TikZNode
 from ..component import Component
 from ..blocks import Circle
 from ..points import Point
+from ..text import Text
 from .generate_connection import generate_connection
 
 
@@ -31,21 +32,14 @@ class Connection(Component):
     def end(self):
         return self._points[-1]
 
-    def __init__(self, points: [Point], arrow: bool = True, text: (str, iter) = None,
-                 text_position: (str, iter) = 'middle', text_align: (str, iter) = 'top', distance_x: float = 0.4,
+    def __init__(self, points: [Point], arrow: bool = True, text: str = None,
+                 text_position: str = 'middle', text_align: str = 'top', distance_x: float = 0.4,
                  distance_y: float = 0.2, line_width: str = 'thin'):
         super().__init__()
         self._points = points
         self._tikz_option = '-latex' if arrow else ''
         self._line_width = line_width
-        self._text = []
-        self._text_position = []
-        self._text_align = []
-        self._align_distance_x = []
-        self._align_distance_y = []
-        self._text_kwargs = {'align': 'center', 'text width': '2cm'}
-        if text is not None:
-            self.add_text(text, text_position, text_align, distance_x, distance_y)
+        self._text = Text(text, self.get_text_position(text_position, text_align, distance_x, distance_y))
 
     def __add__(self, other):
         return Connection(self._points + other.points, other.arrow)
@@ -53,19 +47,6 @@ class Connection(Component):
     def append(self, point: Point):
         if isinstance(point, Point):
             self._points.append(point)
-
-    def add_text(self, text, text_position: str = 'middle', text_align: str = 'top', distance_x: float = 0.4,
-                 distance_y: float = 0.2):
-        if isinstance(text, str) and isinstance(text_position, (str, tuple, list)) and isinstance(text_align, str):
-            self._text.append(text)
-            self._text_position.append(text_position)
-            self._text_align.append(text_align)
-            self._align_distance_x.append(distance_x)
-            self._align_distance_y.append(distance_y)
-        elif isinstance(text, (list, tuple)) and isinstance(text_position, (list, tuple)) and isinstance(text_align,
-                                                                                                         (list, tuple)):
-            for _text, _text_position, _text_align in zip(text, text_position, text_align):
-                self.add_text(_text, _text_position, _text_align, distance_x, distance_y)
 
     def reverse(self):
         self._points.reverse()
@@ -80,47 +61,41 @@ class Connection(Component):
             path.append(TikZUserPath('edge', TikZOptions(self._tikz_option, self._line_width)))
             path.append(self._points[-1].tikz)
 
-        text_position = self.get_text_position()
-        for text, pos in zip(self._text, text_position):
-            pic.append(TikZNode(text=text, at=pos, handle='box', options=self._text_kwargs))
+    def get_text_position(self, text_pos, align, distance_x, distance_y):
 
-    def get_text_position(self):
-        positions = []
-        for text_pos, align, distance_x, distance_y in zip(self._text_position, self._text_align,
-                                                           self._align_distance_x, self._align_distance_y):
-            if isinstance(text_pos, (list, tuple)):
-                p1, p2 = self._points[text_pos[0]: text_pos[0] + 2]
-                if text_pos[1] == 'start':
-                    pos = p1
-                elif text_pos == 'end':
-                    pos = p2
-                else:
-                    pos = Point.get_mid(p1, p2)
-
-            elif text_pos == 'start':
-                pos = self._points[0]
+        if isinstance(text_pos, (list, tuple)):
+            p1, p2 = self._points[text_pos[0]: text_pos[0] + 2]
+            if text_pos[1] == 'start':
+                position = p1
             elif text_pos == 'end':
-                pos = self._points[-1]
+                position = p2
             else:
-                if len(self._points) % 2 == 0:
-                    p1 = self._points[int(len(self._points) / 2) - 1]
-                    p2 = self._points[int(len(self._points) / 2)]
-                    pos = Point.get_mid(p1, p2)
-                else:
-                    pos = self._points[int(len(self._points) / 2)]
+                position = Point.get_mid(p1, p2)
 
-            align = align.split('_', 1)
-            if 'left' in align:
-                pos = pos.sub_x(distance_x)
-            if 'right' in align:
-                pos = pos.add_x(distance_x)
-            if 'top' in align:
-                pos = pos.add_y(distance_y)
-            if 'bottom' in align:
-                pos = pos.sub_y(distance_y)
+        elif text_pos == 'start':
+            position = self._points[0]
+        elif text_pos == 'end':
+            position = self._points[-1]
+        else:
+            if len(self._points) % 2 == 0:
+                p1 = self._points[int(len(self._points) / 2) - 1]
+                p2 = self._points[int(len(self._points) / 2)]
+                position = Point.get_mid(p1, p2)
+            else:
+                position = self._points[int(len(self._points) / 2)]
 
-            positions.append(pos.tikz)
-        return positions
+        align = align.split('_', 1)
+        if 'left' in align:
+            position = position.sub_x(distance_x)
+        if 'right' in align:
+            position = position.add_x(distance_x)
+        if 'top' in align:
+            position = position.add_y(distance_y)
+        if 'bottom' in align:
+            position = position.sub_y(distance_y)
+
+        return position
+
 
     @staticmethod
     def connect(p1: Point, p2: Point, space_x: float = 1, space_y: float = 1, arrow: bool = True,
@@ -138,9 +113,9 @@ class Connection(Component):
                         for p1_, p2_ in zip(p1, p2)]
         else:
             connection = Connection(generate_connection(p1, p2, space_x, space_y, start_direction, end_direction),
-                                    arrow, line_width=line_width)
-            if text is not None:
-                connection.add_text(text, text_position, text_align, distance_x, distance_y)
+                                    arrow, line_width=line_width, text=text, text_position=text_position,
+                                    text_align=text_align)
+
             return connection
 
     @staticmethod
