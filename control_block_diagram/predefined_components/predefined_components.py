@@ -1,7 +1,4 @@
-from control_block_diagram.components.component import Component
-
-
-class PredefinedComponent(Component):
+class PredefinedComponent:
 
     @property
     def position(self):
@@ -144,8 +141,7 @@ class PredefinedComponent(Component):
         self._right = border_dict['right']
         self._bottom = border_dict['bottom']
 
-    def __init__(self, position, doc=None):
-        super().__init__(doc)
+    def __init__(self, position):
 
         self._position = position
 
@@ -163,6 +159,3 @@ class PredefinedComponent(Component):
         self._top = None
         self._right = None
         self._bottom = None
-
-    def build(self, pic):
-        pass

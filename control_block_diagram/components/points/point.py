@@ -1,8 +1,7 @@
 from pylatex import TikZCoordinate
-from ..component import Component
 
 
-class Point(Component):
+class Point:
 
     @property
     def coordinate(self):
@@ -29,7 +28,6 @@ class Point(Component):
         return (self.x ** 2 + self.y ** 2) ** 0.5
 
     def __init__(self, x: float, y: float, direction: str = None):
-        super().__init__()
         self._coordinate = (x, y)
         self._direction = direction if direction in ['north', 'west', 'south', 'east'] else False
 

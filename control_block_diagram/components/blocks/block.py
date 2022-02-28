@@ -47,10 +47,6 @@ class Block(Component):
         return self._position.add(self._size_x / 2, -self._size_y / 2)
 
     @property
-    def end(self):
-        return self.right.add_x(self._space)
-
-    @property
     def input(self):
         return self._input_left + self._input_top + self._input_right + self._input_bottom
 
@@ -102,8 +98,8 @@ class Block(Component):
     def border(self):
         return dict(left=self.left.x, top=self.top.y, right=self.right.x, bottom=self.bottom.y)
 
-    def __init__(self, position: Point, fill: str, draw: str, text: (Text, str), size: tuple, space: float, doc=None):
-        super().__init__(doc)
+    def __init__(self, position: Point, text: (Text, str), size: tuple, **block_configuration):
+        super().__init__()
         self._position = position
 
         if isinstance(position, Center):
@@ -113,6 +109,11 @@ class Block(Component):
                 self._position = self._position.sub_y(size[1] / 2)
 
         self._tikz_options = dict()
+
+        fill = block_configuration.get('fill', self._configuration['fill'])
+        draw = block_configuration.get('draw', self._configuration['draw'])
+        self._line_width = block_configuration.get('line_width', self._configuration['line_width'])
+
         if isinstance(fill, str):
             self._tikz_options['fill'] = fill
         if isinstance(draw, str):
@@ -120,7 +121,9 @@ class Block(Component):
 
         self._text = text if isinstance(text, Text) else Text(text)
         (self._size_x, self._size_y) = size
-        self._space = space
+
+        self._set_border(self.top_left, self.top_right, self.bottom_left, self.bottom_right)
+
         self._input = []
         self._output = []
 
@@ -203,24 +206,4 @@ class Block(Component):
         return [Text(text_, add(point_, space)) for point_, text_ in zip(point, text)]
 
     def build(self, pic):
-        if isinstance(self._text, Text):
-            self._text.build(pic)
-
-        for text in self._input_left_text + self._input_top_text + self._input_right_text + self._input_bottom_text:
-            if isinstance(text, Text):
-                text.build(pic)
-
-        for text in self._output_left_text + self._output_top_text + self._output_right_text + self._output_bottom_text:
-            if isinstance(text, Text):
-                text.build(pic)
-
-        if self._plot_inout:
-            for input_ in self.input:
-                circle = TikZDraw([input_.tikz, 'circle'],
-                                  options=TikZOptions(radius=str(0.1) + 'cm', draw='red', fill='red'))
-                pic.append(circle)
-
-            for output_ in self.output:
-                circle = TikZDraw([output_.tikz, 'circle'],
-                                  options=TikZOptions(radius=str(0.1) + 'cm', draw='blue', fill='blue'))
-                pic.append(circle)
+        pass
