@@ -5,6 +5,22 @@ from control_block_diagram.components.points import Point
 
 class Text(Component):
 
+    @property
+    def top_left(self):
+        return self._position.add(-self._size[0] / 2, self._size[1] / 2)
+
+    @property
+    def top_right(self):
+        return self._position.add(self._size[0] / 2, self._size[1] / 2)
+
+    @property
+    def bottom_left(self):
+        return self._position.add(-self._size[0] / 2, -self._size[1] / 2)
+
+    @property
+    def bottom_right(self):
+        return self._position.add(self._size[0] / 2, -self._size[1] / 2)
+
     def __init__(self, text: any = '', position: Point = Point(0, 0), size: tuple = (2, 1), **text_configuration):
         super().__init__()
 
@@ -18,6 +34,7 @@ class Text(Component):
         self._text_position = [TikZCoordinate(self._position.x,
                                               self._position[1] + self._size[1] / 2 - (i + 1) / (self._len_text + 1) *
                                               self._size[1]) for i in range(self._len_text)]
+        self._set_border(self.top_left, self.top_right, self.bottom_left, self.bottom_right)
 
         self._color = text_configuration.get('text_color', self._configuration['text_color'])
         self._font_size = text_configuration.get('fontsize', self._configuration['fontsize'])

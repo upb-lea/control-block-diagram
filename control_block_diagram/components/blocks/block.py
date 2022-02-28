@@ -119,9 +119,10 @@ class Block(Component):
         if isinstance(draw, str):
             self._tikz_options['draw'] = draw
 
-
         self._text = text if isinstance(text, Text) else Text(text)
         (self._size_x, self._size_y) = size
+
+        self._set_border(self.top_left, self.top_right, self.bottom_left, self.bottom_right)
 
         self._input = []
         self._output = []

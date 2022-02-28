@@ -37,6 +37,7 @@ class Connection(Component):
                  distance_y: float = 0.2, **connection_configuration):
         super().__init__()
         self._points = points
+        self._set_border(*self._points)
         self._tikz_option = '-latex' if arrow else ''
         self._line_width = connection_configuration.get('line_width', self._configuration['line_width'])
         self._draw = connection_configuration.get('draw', self._configuration['draw'])

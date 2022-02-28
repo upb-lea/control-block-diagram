@@ -5,8 +5,9 @@ from control_block_diagram.predefined_components import DqToAlphaBetaTransformat
 
 
 if __name__ == '__main__':
-    document = ControllerDiagram()
 
+    document = ControllerDiagram()
+    ControllerDiagram.set_document(document)
     dq_to_alpha_beta = DqToAlphaBetaTransformation(Point(0, 0))
     pwm = Box(dq_to_alpha_beta.position.add_x(2.5), size=(1.5, 1.2), text='PWM', inputs=dict(left=2, left_space=0.6),
               outputs=dict(right=3, right_space=0.3))
@@ -30,7 +31,7 @@ if __name__ == '__main__':
     alpha_beta_to_dq = AlphaBetaToDqTransformation(Point.merge(dq_to_alpha_beta.position, abc_to_alpha_beta.position),
                                                    size=1.2, input='right', output='left')
 
-    Connection.connect(pmsm.output_left, alpha_beta_to_dq.input_bottom, text=r'$\epsilon$', text_position=(1, 'middle'),
+    Connection.connect(pmsm.output_left, alpha_beta_to_dq.input_bottom, text=r'$\varepsilon$', text_position=(1, 'middle'),
                        text_align='right')
 
     Connection.connect(abc_to_alpha_beta.output, alpha_beta_to_dq.input_right, text=[r'$i_{s \alpha}$', r'$i_{s \beta}$'])
@@ -55,3 +56,4 @@ if __name__ == '__main__':
 
     document.build()
     document.show()
+
