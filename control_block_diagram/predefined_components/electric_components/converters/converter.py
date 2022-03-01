@@ -27,10 +27,3 @@ class Converter(PredefinedComponent):
 
         self._text_input = Text(text_input, position=pos_text_input)
         self._text_output = Text(text_output, position=pos_text_output)
-    '''
-    def build(self, pic):
-        self._box.build(pic)
-        self._diagonal.build(pic)
-        self._text_input.build(pic)
-        self._text_output.build(pic)
-    '''

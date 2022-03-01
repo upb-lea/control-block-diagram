@@ -12,8 +12,3 @@ class Add(PredefinedComponent):
         self.input = self._circle.input_dict
         self.output = self._circle.output_dict
         self.border = self._circle.border
-
-'''
-    def build(self, pic):
-        self._circle.build(pic)
-'''

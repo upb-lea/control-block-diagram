@@ -1,14 +1,16 @@
 from control_block_diagram import ControllerDiagram
 from control_block_diagram.components import Box, Connection, Point, Text
 from control_block_diagram.predefined_components import DqToAlphaBetaTransformation, Converter, PMSM,\
-    AbcToAlphaBetaTransformation, AlphaBetaToDqTransformation, Add
+    AbcToAlphaBetaTransformation, AlphaBetaToDqTransformation, Add, PIController
 
 
 if __name__ == '__main__':
 
     document = ControllerDiagram()
     ControllerDiagram.set_document(document)
-    dq_to_alpha_beta = DqToAlphaBetaTransformation(Point(0, 0))
+
+    pi_controller = PIController(Point(0, 0))
+    dq_to_alpha_beta = DqToAlphaBetaTransformation(pi_controller.position.add_x(2.5))
     pwm = Box(dq_to_alpha_beta.position.add_x(2.5), size=(1.5, 1.2), text='PWM', inputs=dict(left=2, left_space=0.6),
               outputs=dict(right=3, right_space=0.3))
 

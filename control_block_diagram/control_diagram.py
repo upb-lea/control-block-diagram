@@ -1,4 +1,5 @@
 from pylatex import Document, TikZ
+from pylatex.package import Package
 from tkinter import filedialog
 from tkinter import *
 from .components.component import Component
@@ -48,6 +49,7 @@ class ControllerDiagram:
                                                                    'top': '0.3cm', 'left': '0.3cm',
                                                                    'paperwidth': str(size[0]) + 'cm',
                                                                    'paperheight': str(size[1]) + 'cm'})
+        self._doc.packages.append(Package('upgreek'))
         with self._doc.create(TikZ()) as pic:
             for component in self._components:
                 component.build(pic)

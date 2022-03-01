@@ -56,11 +56,3 @@ class ElectricMotor(PredefinedComponent):
 
         self.input = self._circle.input_dict
         self.output = self._circle_2.output_dict
-
-'''
-    def build(self, pic):
-        self._box.build(pic)
-        self._circle_2.build(pic)
-        self._circle.build(pic)
-        self._path.build(pic)
-'''
