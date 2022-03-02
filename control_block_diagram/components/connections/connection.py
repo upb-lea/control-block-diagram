@@ -128,33 +128,38 @@ class Connection(Component):
     @staticmethod
     def connect_to_line(con, point, arrow: bool = True, text: (str, iter) = None,
                         text_position: (str, iter) = 'middle', text_align: (str, iter) = 'top', distance_x: float = 0.4,
-                        distance_y: float = 0.2, move_text: tuple = (0, 0), fill='black', draw=0.1,
+                        distance_y: float = 0.2, move_text: tuple = (0, 0), fill='black', draw=0.05, section=0,
                         **connection_configuration):
         if isinstance(con, (list, tuple)) and isinstance(point, (list, tuple)):
             if isinstance(text, (list, tuple)):
                 return [Connection.connect_to_line(con_, point_, arrow, text_, text_position, text_align,
                                                    distance_x, distance_y, move_text, fill, draw,
                                                    **connection_configuration)
-                        for con_, point_, text_ in
-                        zip(con, point, text)]
+                        for con_, point_, text_ in zip(con, point, text)]
             else:
                 return [Connection.connect_to_line(con_, point_, arrow, text, text_position, text_align,
                                                    distance_x, distance_y, move_text, fill, draw,
                                                    **connection_configuration)
                         for con_, point_ in zip(con, point)]
         else:
-            if con.begin.x == con.end.x:
-                point_start = Point.merge(con.begin, point)
+            if section >= len(con.points) - 1:
+                raise Exception(f'Line has no {section} sections')
+            else:
+                begin = con.points[section]
+                end = con.points[section + 1]
+
+            if begin.x == end.x:
+                point_start = Point.merge(begin, point)
                 if point_start.x > point.x:
                     output = 'left'
                 else:
                     output = 'right'
-            elif con.begin.y == con.end.y:
-                point_start = Point.merge(point, con.begin)
+            elif begin.y == end.y:
+                point_start = Point.merge(point, begin)
                 if point_start.y > point.y:
-                    output = 'top'
-                else:
                     output = 'bottom'
+                else:
+                    output = 'top'
             else:
                 raise Exception("Line and Point can't be connected")
 

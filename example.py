@@ -28,12 +28,12 @@ if __name__ == '__main__':
 
     abc_to_alpha_beta = AbcToAlphaBetaTransformation(pwm.position.sub_y(3.5), size=1.2, input='right', output='left')
 
-    Connection.connect_to_line(con_2, abc_to_alpha_beta.input_right, fill=False, text=[r'$i_{s a,b,c}$', '', ''])
+    Connection.connect_to_line(con_2, abc_to_alpha_beta.input_right, draw=0.1, fill=False, text=[r'$i_{s a,b,c}$', '', ''])
 
     alpha_beta_to_dq = AlphaBetaToDqTransformation(Point.merge(dq_to_alpha_beta.position, abc_to_alpha_beta.position),
                                                    size=1.2, input='right', output='left')
 
-    Connection.connect(pmsm.output_left, alpha_beta_to_dq.input_bottom, text=r'$\varepsilon$', text_position=(1, 'middle'),
+    con_3 = Connection.connect(pmsm.output_left, alpha_beta_to_dq.input_bottom, text=r'$\varepsilon$', text_position=(1, 'middle'),
                        text_align='right')
 
     Connection.connect(abc_to_alpha_beta.output, alpha_beta_to_dq.input_right, text=[r'$i_{s \alpha}$', r'$i_{s \beta}$'])
