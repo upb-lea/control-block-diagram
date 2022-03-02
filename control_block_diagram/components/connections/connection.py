@@ -34,14 +34,14 @@ class Connection(Component):
 
     def __init__(self, points: [Point], arrow: bool = True, text: str = None,
                  text_position: str = 'middle', text_align: str = 'top', distance_x: float = 0.4,
-                 distance_y: float = 0.2, **connection_configuration):
+                 distance_y: float = 0.2, move_text: tuple = (0, 0), **connection_configuration):
         super().__init__()
         self._points = points
         self._set_border(*self._points)
         self._tikz_option = '-latex' if arrow else ''
         self._line_width = connection_configuration.get('line_width', self._configuration['line_width'])
         self._draw = connection_configuration.get('draw', self._configuration['draw'])
-        self._text = Text(text, self.get_text_position(text_position, text_align, distance_x, distance_y))
+        self._text = Text(text, self.get_text_position(text_position, text_align, distance_x, distance_y, move_text))
 
     def __add__(self, other):
         return Connection(self._points + other.points, other.arrow)
@@ -63,7 +63,7 @@ class Connection(Component):
             path.append(TikZUserPath('edge', TikZOptions(self._draw, self._line_width, self._tikz_option)))
             path.append(self._points[-1].tikz)
 
-    def get_text_position(self, text_pos, align, distance_x, distance_y):
+    def get_text_position(self, text_pos, align, distance_x, distance_y, move_text):
 
         if isinstance(text_pos, (list, tuple)):
             p1, p2 = self._points[text_pos[0]: text_pos[0] + 2]
@@ -96,45 +96,51 @@ class Connection(Component):
         if 'bottom' in align:
             position = position.sub_y(distance_y)
 
+        position = position.add(*move_text)
+
         return position
 
     @staticmethod
     def connect(p1: Point, p2: Point, space_x: float = 1, space_y: float = 1, arrow: bool = True,
                 text: (str, iter) = None, text_position: (str, iter) = 'middle',
                 text_align: (str, iter) = 'top', distance_x: float = 0.4,  distance_y: float = 0.2,
-                start_direction: str = None, end_direction: str = None, **connection_configuration):
+                move_text: tuple = (0, 0), start_direction: str = None, end_direction: str = None,
+                **connection_configuration):
         if isinstance(p1, (list, tuple)) and isinstance(p2, (list, tuple)):
             if isinstance(text, (list, tuple)):
                 return [Connection.connect(p1_, p2_, space_x, space_y, arrow, text_, text_position,
-                                           text_align, distance_x, distance_y, start_direction, end_direction,
-                                           **connection_configuration)
+                                           text_align, distance_x, distance_y, move_text, start_direction,
+                                           end_direction, **connection_configuration)
                         for p1_, p2_, text_ in zip(p1, p2, text)]
             else:
                 return [Connection.connect(p1_, p2_, space_x, space_y, arrow, text, text_position,
-                                           text_align, distance_x, distance_y, start_direction, end_direction,
-                                           **connection_configuration)
+                                           text_align, distance_x, distance_y, move_text, start_direction,
+                                           end_direction, **connection_configuration)
                         for p1_, p2_ in zip(p1, p2)]
         else:
             connection = Connection(generate_connection(p1, p2, space_x, space_y, start_direction, end_direction),
                                     arrow, text=text, text_position=text_position,
                                     text_align=text_align, distance_x=distance_x, distance_y=distance_y,
-                                    **connection_configuration)
+                                    move_text=move_text, **connection_configuration)
 
             return connection
 
     @staticmethod
     def connect_to_line(con, point, arrow: bool = True, text: (str, iter) = None,
                         text_position: (str, iter) = 'middle', text_align: (str, iter) = 'top', distance_x: float = 0.4,
-                        distance_y: float = 0.2, fill='black', draw=0.1, **connection_configuration):
+                        distance_y: float = 0.2, move_text: tuple = (0, 0), fill='black', draw=0.1,
+                        **connection_configuration):
         if isinstance(con, (list, tuple)) and isinstance(point, (list, tuple)):
             if isinstance(text, (list, tuple)):
                 return [Connection.connect_to_line(con_, point_, arrow, text_, text_position, text_align,
-                                                   distance_x, distance_y, fill, draw, **connection_configuration)
+                                                   distance_x, distance_y, move_text, fill, draw,
+                                                   **connection_configuration)
                         for con_, point_, text_ in
                         zip(con, point, text)]
             else:
                 return [Connection.connect_to_line(con_, point_, arrow, text, text_position, text_align,
-                                                   distance_x, distance_y, fill, draw, **connection_configuration)
+                                                   distance_x, distance_y, move_text, fill, draw,
+                                                   **connection_configuration)
                         for con_, point_ in zip(con, point)]
         else:
             if con.begin.x == con.end.x:
@@ -158,4 +164,4 @@ class Connection(Component):
 
             return Connection.connect(point_start, point, arrow=arrow, text=text,
                                       text_position=text_position, text_align=text_align, distance_x=distance_x,
-                                      distance_y=distance_y, **connection_configuration)
+                                      distance_y=distance_y, move_text=move_text, **connection_configuration)

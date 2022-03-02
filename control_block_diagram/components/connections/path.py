@@ -7,8 +7,8 @@ class Path(Connection):
 
     def __init__(self, points: [Point], angles: (list, tuple) = None, arrow: bool = True, text: str = None,
                  text_position: str = 'middle', text_align: str = 'top', distance_x: float = 0.4,
-                 distance_y: float = 0.2, **connection_configuration):
-        super().__init__(points, arrow, text, text_position, text_align, distance_x, distance_y,
+                 distance_y: float = 0.2, move_text: tuple = (0, 0), **connection_configuration):
+        super().__init__(points, arrow, text, text_position, text_align, distance_x, distance_y, move_text,
                          **connection_configuration)
         self._angles = angles
 
