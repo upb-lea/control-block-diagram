@@ -98,7 +98,6 @@ class Connection(Component):
 
         return position
 
-
     @staticmethod
     def connect(p1: Point, p2: Point, space_x: float = 1, space_y: float = 1, arrow: bool = True,
                 text: (str, iter) = None, text_position: (str, iter) = 'middle',
@@ -118,7 +117,8 @@ class Connection(Component):
         else:
             connection = Connection(generate_connection(p1, p2, space_x, space_y, start_direction, end_direction),
                                     arrow, text=text, text_position=text_position,
-                                    text_align=text_align, **connection_configuration)
+                                    text_align=text_align, distance_x=distance_x, distance_y=distance_y,
+                                    **connection_configuration)
 
             return connection
 
