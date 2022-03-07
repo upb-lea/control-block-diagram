@@ -1,2 +1,2 @@
 # control-block-diagram
-![](docs/Feedforward.svg)
+![](docs/pmsm_control_block_diagram.png)
