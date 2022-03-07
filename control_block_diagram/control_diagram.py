@@ -28,11 +28,14 @@ class ControllerDiagram:
 
     def set_document(self):
         Component._document = self
-        self._configuration['draw'] = self._configuration_input.get('draw', 'black')
+        self._configuration['draw'] = self._configuration_input.get('color', 'black')
+        self._configuration['text_color'] = self._configuration_input.get('color', 'black')
+        self._configuration['draw'] = self._configuration_input.get('draw', self._configuration['draw'])
         self._configuration['fill'] = self._configuration_input.get('fill', 'white')
-        self._configuration['line_width'] = self._configuration_input.get('line_width', 'thin')
+        self._configuration['line_width'] = self._configuration_input.get('line_width', 'thick')
         self._configuration['fontsize'] = self._configuration_input.get('fontsize', r'\normalsize')
-        self._configuration['text_color'] = self._configuration_input.get('text_color', 'black')
+        self._configuration['text_color'] = self._configuration_input.get('text_color',
+                                                                          self._configuration['text_color'])
 
         Component.configuration = self._configuration
 

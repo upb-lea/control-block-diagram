@@ -1,130 +1,137 @@
 from control_block_diagram import ControllerDiagram
 from control_block_diagram.components import Box, Connection, Point, Text
 from control_block_diagram.predefined_components import DqToAlphaBetaTransformation, Converter, PMSM,\
-    AbcToAlphaBetaTransformation, AlphaBetaToDqTransformation, Add, PIController, Multiply
+    AbcToAlphaBetaTransformation, AlphaBetaToDqTransformation, Add, PIController, Multiply, DcShuntMotor, DcSeriesMotor,\
+    DcConverter
+
+
+def omega_stage(start, idx):
+    space = 1 if idx == 0 else 1.5
+    add_omega = Add(start.add_x(space))
+    if idx == 0:
+        Connection.connect(start, add_omega.input_left[0], text=r'$\omega_{ref}$', text_align='left',
+                           text_position='start')
+    pi_omega = PIController(add_omega.position.add_x(1.5), text='Speed\nController')
+    Connection.connect(add_omega.output_right, pi_omega.input_left)
+
+    inputs = dict(omega_ref=[add_omega.input_left[0], dict(text=r'$\omega_{ref}$')], omega=[add_omega.input_bottom[0],
+                                        dict(text=r'-', move_text=(-0.2, -0.2), text_position='end', text_align='right')])
+    outputs = dict(t_ref=pi_omega.output_right[0])
+    connect_to_lines = dict()
+    start = pi_omega.position
+
+    return start, inputs, outputs, connect_to_lines
+
+
+def torque_stage(start, idx):
+    space = 1 if idx == 0 else 2.2
+    box_torque = Box(start.add_x(space), size=(0.8, 0.8), text=r"$\frac{1}{\Psi'_{E}}$")
+    if idx == 0:
+        Connection.connect(start, box_torque.input_left[0], text=r'$T_{ref}$', text_align='left',
+                           text_position='start')
+
+    inputs = dict(t_ref=[box_torque.input_left[0], dict(text=r'$T^{*}$')])
+    outputs = dict(i_ref=box_torque.output_right[0])
+    connect_to_lines = dict()
+
+    start = box_torque.position
+
+    return start, inputs, outputs, connect_to_lines
+
+
+def current_stage(emf_feedforward, env_id):
+    def _current_stage(start, idx):
+        control_task = env_id.split('-')[1]
+        space = 1 if idx == 0 else 1.5
+        add_current = Add(start.add_x(space))
+        if idx == 0:
+            Connection.connect(start, add_current.input_left[0], text=r'$i_{ref}$', text_align='left',
+                               text_position='start')
+        pi_current = PIController(add_current.position.add_x(1.5), text='Current\nController')
+        Connection.connect(add_current.output_right, pi_current.input_left)
+
+        inputs = dict(i_ref=[add_current.input_left[0], dict(text=r'$i^{*}$')], i=[add_current.input_bottom[0],
+                        dict(text=r'-', move_text=(-0.2, -0.2), text_position='end', text_align='right')])
+        outputs = dict(u=pi_current.output_right[0])
+        connect_to_lines = dict()
+        start = pi_current.position
+
+        if emf_feedforward:
+            add_emf = Add(pi_current.position.add_x(2))
+            Connection.connect(pi_current.output_right, add_emf.input_left, text=r'$\Delta u^{*}$')
+
+            box_psi = Box(add_emf.position.sub_y(2.5), size=(0.7, 0.7), text=r"$\Psi'_{E}$", inputs=dict(bottom=1),
+                          outputs=dict(top=1))
+            Connection.connect(box_psi.output_top, add_emf.input_bottom, text=r'$u^{0}$', text_position='end',
+                               text_align='right', move_text=(-0.1, -0.2))
+            if control_task in ['SC']:
+                connect_to_lines['omega'] = [box_psi.input_bottom[0], dict(section=0)]
+            elif control_task in ['CC', 'TC']:
+                inputs['omega'] = [box_psi.input_bottom[0], dict()]
+            outputs['u'] = add_emf.output_right[0]
+            start = add_emf.position
+
+        return start, inputs, outputs, connect_to_lines
+
+    return _current_stage
+
+
+def series_dc_stage(emf_feedforward, env_id):
+    def _series_dc_stage(start, idx):
+        control_task = env_id.split('-')[1]
+        space = 1.5 if emf_feedforward else 2
+        pwm = Box(start.add_x(space), size=(1, 0.8), text='PWM')
+        converter = DcConverter(pwm.position.add_x(2), size=1.2, input_number=1)
+        Connection.connect(pwm.output_right, converter.input_left, text='$S$')
+
+        dc_shunt = DcSeriesMotor(converter.position.sub_y(3), size=1.2, input='top', output='left')
+
+        conv_motor = Connection.connect(converter.output_bottom, dc_shunt.input_top, text=['', r'$i$'],
+                                        text_align='right', arrow=False)
+
+        con_i = Connection.connect_to_line(conv_motor[0], pwm.position.sub_y(1.5), text=r'$i$', arrow=False, fill=False,
+                                           draw=0.1)
+        inputs = dict(u=[pwm.input_left[0], dict(text=r'$u^{*}$')])
+        outputs = dict(i=con_i.end)
+        connect_to_lines = dict()
+        start = converter.position
+
+        if emf_feedforward or control_task in ['SC']:
+            con_omega = Connection.connect(dc_shunt.output_left[0].sub_x(2), dc_shunt.output_left[0],
+                                           text=r'$\omega_{me}$', arrow=False)
+            outputs['omega'] = con_omega.end
+
+        return start, inputs, outputs, connect_to_lines
+    return _series_dc_stage
 
 
 if __name__ == '__main__':
 
-    document = ControllerDiagram()
+    env_id = 'Cont-SC-ShuntDc-v0'
+    emf_feedforward = True
+    document = ControllerDiagram('pdf')
     start = Point(0, 0)
 
-    add_i_sd = Add(start.add_x(3))
-    add_i_sq = Add(add_i_sd.position.sub(0.5, 1))
+    stages = [omega_stage, torque_stage, current_stage(emf_feedforward, env_id), series_dc_stage(emf_feedforward, env_id)]
+    #stages = [current_stage(emf_feedforward, env_id), series_dc_stage(emf_feedforward, env_id)]
+    inputs = dict()
+    outputs = dict()
+    connections = dict()
+    connect_to_lines = dict()
 
-    pi_i_sd = PIController(add_i_sd.position.add_x(1.2), size=(1, 0.8), input_number=1, output_number=1)
-    pi_i_sq = PIController(Point.merge(pi_i_sd.position, add_i_sq.position), size=(1, 0.8), input_number=1,
-                           output_number=1)
+    for idx, stage in enumerate(stages):
+        start, inputs_, outputs_, connect_to_lines_ = stage(start, idx)
+        inputs = {**inputs, **inputs_}
+        outputs = {**outputs, **outputs_}
+        connect_to_lines = {**connect_to_lines, **connect_to_lines_}
 
-    Connection.connect(add_i_sd.output_right, pi_i_sd.input_left)
-    Connection.connect(add_i_sq.output_right, pi_i_sq.input_left)
+    for key in inputs.keys():
+        if key in outputs.keys():
+            connections[key] = Connection.connect(outputs[key], inputs[key][0], **inputs[key][1])
 
-    add_u_sd = Add(pi_i_sd.position.add_x(2))
-    add_u_sq = Add(pi_i_sq.position.add_x(1.2))
-
-    Connection.connect(pi_i_sd.output_right[0], add_u_sd.input_left[0], text=r'$\Delta u^{*}_{sd}$',
-                       distance_y=0.25)
-    Connection.connect(pi_i_sq.output_right[0], add_u_sq.input_left[0], text=r'$\Delta u^{*}_{sq}$',
-                       distance_y=0.4, move_text=(0.25, 0))
-
-    dq_to_alpha_beta = DqToAlphaBetaTransformation(Point.get_mid(add_u_sd.position, add_u_sq.position).add_x(2),
-                                                   input_space=1)
-
-    Connection.connect(add_u_sd.output_right[0], dq_to_alpha_beta.input_left[0], text=r'$u^{*}_{sd}$',
-                       distance_y=0.25)
-    Connection.connect(add_u_sq.output_right[0], dq_to_alpha_beta.input_left[1], text=r'$u^{*}_{sq}$',
-                       distance_y=0.25, move_text=(0.4, 0))
-
-    pwm = Box(dq_to_alpha_beta.position.add_x(2.5), size=(1.5, 1.2), text='PWM',
-              inputs=dict(left=2, left_space=0.6),
-              outputs=dict(right=3, right_space=0.3))
-
-    Connection.connect(dq_to_alpha_beta.output_right, pwm.input_left,
-                       text=[r'$u^*_{s \alpha}$', r'$u^*_{s \beta}$'], distance_y=0.25)
-
-    converter = Converter(pwm.position.add_x(2.5), input='left', input_number=3, input_space=0.3, output='bottom',
-                          output_number=3, additional_inputs=dict(top=2, top_space=0.8))
-
-    Connection.connect(pwm.output_right, converter.input_left, text=[r'$S_{\mathrm{a,b,c}}$', '', ''])
-    con_1 = [Connection.connect(input.add_y(0.7), input, arrow=False) for input in converter.input_top]
-    Connection.connect(con_1[1].begin.add(-0.1, 0.1), con_1[0].begin.add(0.1, 0.1), text=r'$u_{dc}$')
-
-    pmsm = PMSM(converter.position.sub_y(5), size=1.3, input='top')
-    con_2 = Connection.connect(converter.output_bottom, pmsm.input_top, arrow=False)
-
-    abc_to_alpha_beta = AbcToAlphaBetaTransformation(pwm.position.sub_y(3.5), input='right', output='left')
-
-    Connection.connect_to_line(con_2, abc_to_alpha_beta.input_right, draw=0.1, fill=False,
-                               text=[r'$i_{\mathrm{s a,b,c}}$', '', ''])
-
-    alpha_beta_to_dq = AlphaBetaToDqTransformation(
-        Point.merge(dq_to_alpha_beta.position, abc_to_alpha_beta.position), input='right', output='left')
-
-    distance = (add_u_sq.position.y - alpha_beta_to_dq.output_left[0].y) / 4
-
-    multiply_u_sq = Multiply(add_u_sq.position.sub_y(distance), outputs=dict(top=1))
-    Connection.connect(multiply_u_sq.output_top, add_u_sq.input_bottom)
-
-    add_psi_p = Add(multiply_u_sq.position.sub_y(distance), outputs=dict(top=1))
-    Connection.connect(add_psi_p.output_top, multiply_u_sq.input_bottom)
-    Connection.connect(add_psi_p.input_left[0].sub_x(0.3), add_psi_p.input_left[0], text=r'$\Psi_{p}$',
-                       text_position='start', text_align='left', distance_x=0.25)
-
-    box_ls_1 = Box(add_psi_p.position.sub_y(distance), size=(0.6, 0.6), inputs=dict(bottom=1), outputs=dict(top=1),
-                   text=r'$L_{s}$')
-    Connection.connect(box_ls_1.output_top, add_psi_p.input_bottom)
-
-    multiply_u_sd = Multiply(Point.merge(add_u_sd.position, multiply_u_sq.position), outputs=dict(top=1))
-    Connection.connect(multiply_u_sd.output_top, add_u_sd.input_bottom, text=r'-', text_position='end',
-                       text_align='right', move_text=(-0.2, -0.2))
-    Connection.connect(multiply_u_sd.input_left[0].sub_x(0.3), multiply_u_sd.input_left[0])
-
-    box_ls_2 = Box(Point.merge(multiply_u_sd.position, box_ls_1.position), size=(0.6, 0.6), inputs=dict(bottom=1),
-                   outputs=dict(top=1), text=r'$L_{s}$')
-    Connection.connect(box_ls_2.output_top, multiply_u_sd.input_bottom)
-
-    con_3 = Connection.connect(alpha_beta_to_dq.output_left[0], add_i_sd.input_bottom[0], text=r'-',
-                               text_position='end',
-                               text_align='right', move_text=(-0.2, -0.2))
-    Connection.connect_to_line(con_3, box_ls_1.input_bottom[0])
-
-    con_4 = Connection.connect(alpha_beta_to_dq.output_left[1], add_i_sq.input_bottom[0], text=r'-',
-                               text_position='end',
-                               text_align='right', move_text=(-0.2, -0.2))
-    Connection.connect_to_line(con_4, box_ls_2.input_bottom[0])
-
-    box_d_dt = Box(Point.merge(alpha_beta_to_dq.position, pmsm.output_left[0]).sub_x(2), size=(1, 0.8),
-                   text=r'$d / dt$', inputs=dict(right=1), outputs=dict(left=1))
-    Connection.connect(box_d_dt.output_left, multiply_u_sq.input_left, space_y=1, text=r'$\omega$', move_text=(0, 2),
-                       text_align='left', distance_x=0.2)
-
-    con_5 = Connection.connect(pmsm.output_left[0], alpha_beta_to_dq.input_bottom[0], text=r'$\varepsilon$',
-                               text_position=(1, 'middle'), text_align='right')
-
-    Connection.connect_to_line(con_5, box_d_dt.input_right[0], section=1)
-
-    Connection.connect(abc_to_alpha_beta.output, alpha_beta_to_dq.input_right,
-                       text=[r'$i_{\mathrm{s \alpha}}$', r'$i_{\mathrm{s \beta}}$'])
-
-    add = Add(Point.get_mid(dq_to_alpha_beta.position, alpha_beta_to_dq.position), inputs=dict(bottom=1, right=1),
-              outputs=dict(top=1))
-
-    Connection.connect(alpha_beta_to_dq.output_top, add.input_bottom, text=r'$\varepsilon$', text_align='right',
-                       move_text=(0, -0.1))
-    Connection.connect(add.output_top, dq_to_alpha_beta.input_bottom)
-
-    box_t_a = Box(add.position.add_x(1.5), size=(1, 0.8), text=r'$1,5 T_a$', inputs=dict(right=1),
-                  outputs=dict(left=1))
-
-    Connection.connect(box_t_a.output, add.input_right, text=r'$\Delta \varepsilon$')
-    Connection.connect(box_t_a.input[0].add_x(0.5), box_t_a.input[0], text=r'$\omega$', text_position='start',
-                       text_align='right', distance_x=0.2)
-
-    top_left = Point(add.border['left'], box_t_a.border['top']).add(-0.1, 0.1)
-    bottom_right = box_t_a.bottom_right.add(0.1, -0.1)
-    box_angle = Box([top_left, bottom_right], fill=False, draw='blue')
-
-    Text('angle advance', size=(2.5, 1), position=box_angle.bottom_right.sub_y(0.2))
+    for key in connect_to_lines.keys():
+        if key in connections.keys():
+            Connection.connect_to_line(connections[key], connect_to_lines[key][0], **connect_to_lines[key][1])
 
     document.build()
     document.show()
