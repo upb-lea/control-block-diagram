@@ -112,4 +112,5 @@ class ControllerDiagram:
                                                    defaultextension='.tex')
             else:
                 raise ValueError(
-                    f'The file type {data_type} is not supported. Use the Portable Document Format (pdf) or Tex Document (tex) file type.')
+                    f'The file type {data_type} is not supported. Use the Portable Document Format (pdf) or Tex'
+                    f' Document (tex) file type.')
