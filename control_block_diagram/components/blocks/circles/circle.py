@@ -17,27 +17,27 @@ class Circle(Block):
         self._radius = radius
 
         input_dict = {'left': ('west', -1, inputs.get('left', 0), Input, inputs.get('left_space', None),
-                               inputs.get('left_text', ())),
+                               inputs.get('left_text_space', 0.2), inputs.get('left_text', ())),
                       'top': ('north', 1, inputs.get('top', 0), Input, inputs.get('top_space', None),
-                              inputs.get('top_text', ())),
+                              inputs.get('top_text_space', 0.2), inputs.get('top_text', ())),
                       'right': ('east', 1, inputs.get('right', 0), Input, inputs.get('right_space', None),
-                                inputs.get('right_text', ())),
+                                inputs.get('right_text_space', 0.2), inputs.get('right_text', ())),
                       'bottom': ('south', -1, inputs.get('bottom', 0), Input, inputs.get('bottom_space', None),
-                                 inputs.get('bottom_text', ()))}
+                                 inputs.get('bottom_text_space', 0.2), inputs.get('bottom_text', ()))}
 
         output_dict = {'left': ('west', -1, outputs.get('left', 0), Output, outputs.get('left_space', None),
-                                outputs.get('left_text', ())),
+                                outputs.get('left_text_space', 0.2), outputs.get('left_text', ())),
                        'top': ('north', 1, outputs.get('top', 0), Output, outputs.get('top_space', None),
-                               outputs.get('top_text', ())),
+                               outputs.get('top_text_space', 0.2), outputs.get('top_text', ())),
                        'right': ('east', 1, outputs.get('right', 0), Output, outputs.get('right_space', None),
-                                 outputs.get('right_text', ())),
+                                 outputs.get('right_text_space', 0.2), outputs.get('right_text', ())),
                        'bottom': ('south', -1, outputs.get('bottom', 0), Output, outputs.get('bottom_space', None),
-                                  outputs.get('bottom_text', ()))}
+                                  outputs.get('bottom_text_space', 0.2), outputs.get('bottom_text', ()))}
 
         self.set_in_output(input_dict, output_dict, self._get_in_output)
 
     def _get_in_output(self, in_out_dict):
-        direction, sign, count, in_out, space, _ = in_out_dict
+        direction, sign, count, in_out, space, _, _ = in_out_dict
         y_list = Block.get_in_out_list(self._radius * 2, space, count)
 
         if direction in ['west', 'east']:

@@ -2,7 +2,7 @@ from control_block_diagram import ControllerDiagram
 from control_block_diagram.components import Box, Connection, Point, Text
 from control_block_diagram.predefined_components import DqToAlphaBetaTransformation, Converter, PMSM,\
     AbcToAlphaBetaTransformation, AlphaBetaToDqTransformation, Add, PIController, Multiply, DcShuntMotor, DcSeriesMotor,\
-    DcConverter, DcPermExMotor
+    DcConverter, DcPermExMotor, Divide
 
 
 def omega_stage(start, control_task):
@@ -105,6 +105,9 @@ def series_dc_stage(emf_feedforward):
             con_omega = Connection.connect(dc_series.output_left[0].sub_x(2), dc_series.output_left[0],
                                            text=r'$\omega_{\mathrm{me}}$', arrow=False)
             outputs['omega'] = con_omega.end
+
+        div = Divide(start.add_x(2))
+        [Connection.connect(inp.sub_x(1), inp) for inp in div.input_left]
 
         return start, inputs, outputs, connect_to_lines, connections
     return _series_dc_stage
