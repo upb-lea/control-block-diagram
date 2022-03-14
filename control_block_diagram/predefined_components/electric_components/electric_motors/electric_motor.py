@@ -5,11 +5,13 @@ from pylatex import TikZDraw, TikZUserPath, TikZOptions
 
 class ElectricMotor(PredefinedComponent):
     def __init__(self, position, text, size=1.5, input: str = 'left', input_number: int = 1, output: str = 'left',
-                 orientation: str = 'bottom', input_space: float = 0.3):
+                 orientation: str = 'bottom', input_space: float = 0.3, additional_inputs=dict()):
         super().__init__(position)
         self._size = size
+        additional_inputs[input] = input_number
+        additional_inputs[input + '_space'] = input_space
         self._circle = Circle(position, radius=size / 2, text=text,
-                              inputs={input: input_number, input + '_space': input_space},
+                              inputs=additional_inputs,
                               outputs={orientation: 2, orientation + '_space': size * 0.2})
 
         box_pos = (self._circle.output[0] + self._circle.output[1]) / 2
