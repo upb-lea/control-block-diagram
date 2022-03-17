@@ -11,6 +11,10 @@ class Divide(PredefinedComponent):
             output = 'right'
         elif inputs == 'right':
             output = 'left'
+        elif inputs == 'bottom':
+            output = 'top'
+        elif inputs == 'top':
+            output = 'bottom'
         else:
             raise Exception(f'{inputs} is an invalid page for the inputs.')
 
@@ -20,6 +24,7 @@ class Divide(PredefinedComponent):
                 input_text.append(r'$\times$')
             elif op == '/':
                 input_text.append(r'$\div$')
+
         self._box = Box(position, size, inputs={inputs: len(input_text), inputs + '_text': input_text,
                                                 inputs + '_space': input_space, inputs + '_text_space': 0.2},
                         outputs={output: 1}, **box_kwargs)

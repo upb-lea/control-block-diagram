@@ -158,7 +158,6 @@ class Block(Component):
         self._input_top = get_position(input_dict['top'])
         self._input_right = get_position(input_dict['right'])
         self._input_bottom = get_position(input_dict['bottom'])
-
         self._output_left = get_position(output_dict['left'])
         self._output_top = get_position(output_dict['top'])
         self._output_right = get_position(output_dict['right'])
@@ -170,7 +169,7 @@ class Block(Component):
                                                     Point.sub_y)
         self._input_right_text = self.set_in_out_text(self._input_right, input_dict['right'][-1],
                                                       input_dict['right'][-2], Point.sub_x)
-        self._input_bottom_text = self.set_in_out_text(self._input_top, input_dict['bottom'][-1][::-1],
+        self._input_bottom_text = self.set_in_out_text(self._input_bottom, input_dict['bottom'][-1][::-1],
                                                        input_dict['bottom'][-2], Point.add_y)
 
         self._output_left_text = self.set_in_out_text(self._output_left, output_dict['left'][-1],
@@ -179,7 +178,7 @@ class Block(Component):
                                                      output_dict['top'][-2], Point.sub_y)
         self._output_right_text = self.set_in_out_text(self._output_right, output_dict['right'][-1],
                                                        output_dict['right'][-2], Point.sub_x)
-        self._output_bottom_text = self.set_in_out_text(self._input_top, output_dict['bottom'][-1][::-1],
+        self._output_bottom_text = self.set_in_out_text(self._output_bottom, output_dict['bottom'][-1][::-1],
                                                         output_dict['bottom'][-2], Point.add_y)
 
         self._input_top = self._input_top[::-1]

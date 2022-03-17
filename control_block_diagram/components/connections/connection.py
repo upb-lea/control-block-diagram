@@ -103,7 +103,7 @@ class Connection(Component):
     @staticmethod
     def connect(p1: Point, p2: Point, space_x: float = 1, space_y: float = 1, arrow: bool = True,
                 text: (str, iter) = None, text_position: (str, iter) = 'middle',
-                text_align: (str, iter) = 'top', distance_x: float = 0.4,  distance_y: float = 0.2,
+                text_align: (str, iter) = 'top', distance_x: float = 0.4,  distance_y: float = 0.25,
                 move_text: tuple = (0, 0), start_direction: str = None, end_direction: str = None,
                 **connection_configuration):
         if isinstance(p1, (list, tuple)) and isinstance(p2, (list, tuple)):
@@ -128,7 +128,7 @@ class Connection(Component):
     @staticmethod
     def connect_to_line(con, point, arrow: bool = True, text: (str, iter) = None,
                         text_position: (str, iter) = 'middle', text_align: (str, iter) = 'top', distance_x: float = 0.4,
-                        distance_y: float = 0.2, move_text: tuple = (0, 0), fill='black', draw=0.05, section=0,
+                        distance_y: float = 0.25, move_text: tuple = (0, 0), fill='black', draw=0.05, section=0,
                         **connection_configuration):
         if isinstance(con, (list, tuple)) and isinstance(point, (list, tuple)):
             if isinstance(text, (list, tuple)):
