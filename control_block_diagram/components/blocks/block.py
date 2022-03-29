@@ -15,6 +15,14 @@ class Block(Component):
         return self._size_x, self._size_y
 
     @property
+    def size_x(self):
+        return self._size_x
+
+    @property
+    def size_y(self):
+        return self._size_y
+
+    @property
     def right(self):
         return self._position.add_x(self._size_x / 2, 'east')
 
