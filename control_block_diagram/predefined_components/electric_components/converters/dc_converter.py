@@ -3,11 +3,11 @@ from control_block_diagram.components import Connection
 
 
 class DcConverter(Converter):
-    def __init__(self, position, size: float = 1.5, input_number: int = 1, output_number: int = 2,
-                 input_space: float = 0.6,  output_space: float = 0.3):
+    def __init__(self, position, size: float = 1.5, input: str = 'left', input_number: int = 1, output: str = 'bottom',
+                 output_number: int = 2, input_space: float = 0.6,  output_space: float = 0.3):
 
         additional_inputs = dict(top=2, top_space=size * 0.6)
-        super().__init__(position, size, '', '', 'left', input_number, 'bottom', output_number, additional_inputs,
+        super().__init__(position, size, '', '', input, input_number, output, output_number, additional_inputs,
                          dict(), input_space, output_space)
         self._con_in = [Connection.connect(_input.add_y(0.4 * size), _input, arrow=False) for _input in
                         self._box.input_top]
