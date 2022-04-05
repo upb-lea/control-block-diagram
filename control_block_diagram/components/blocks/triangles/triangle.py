@@ -5,11 +5,29 @@ from ...text import Text
 
 
 class Triangle(Block):
+    """Triangle with inputs, outputs and text"""
 
     def __init__(self, position: (Point, Center), size: tuple = (2.5, 1.5), text: (Text, str) = None,
-                 inputs: dict = dict(left=1), outputs: dict = dict(right=1), **block_configuration):
-        super().__init__(position, text, size, **block_configuration)
+                 inputs: dict = dict(left=1), outputs: dict = dict(right=1), text_configuration: dict = dict(),
+                 **block_configuration):
+        """
+            Initializes a triangle and adds it to the active document
 
+            position:   center of the triangle
+            radius:     radius of the triangle
+            text:       text inside the triangle
+            inputs:     dictonary with the configuration of the inputs of a triangle, possible keys:
+                            left, right, top, bottom:   number of inputs on each side
+                            "side" + _space:            distance of inputs on this side
+                            "side" + _text:             list with the texts at the inputs of this side
+                            "side" + _text_space:       distance of the text to the inputs of this side
+            outputs:    dictonary with the configuration of the inputs of a triangle, same possible keys as for inputs
+            block_configuration:    further settings of a block, e.g. draw color or fill color
+        """
+
+        super().__init__(position, text, size, text_configuration, **block_configuration)
+
+        # Define inputs and outputs of the circle
         input_dict = {'left': (
             self.left.add_y, 'west', self._size_y, inputs.get('left', 0), Input, inputs.get('left_space', None),
             inputs.get('left_text_space', 0.2), inputs.get('left_text', ())),
@@ -37,16 +55,18 @@ class Triangle(Block):
                 outputs.get('bottom_text_space', 0.2), outputs.get('bottom_text', ()))}
 
         self.set_in_output(input_dict, output_dict, self._get_in_output)
-        self._text.define(position=self.position.add_x(-self.size[0] / 4))
+
+        self._text.define(position=self.position.add_x(-self.size[0] / 4))  # Define the text of the triangle
 
     @staticmethod
     def _get_in_output(in_out_dict):
+        """Function to calculate the positions of the inputs and outputs"""
         pos_func, direction, size, count, in_out, space, _, _ = in_out_dict
         pos_list = Block.get_in_out_list(size, space, count)
         return [in_out.convert(pos_func(pos, direction)) for pos in pos_list]
 
     def build(self, pic):
-
+        """Funtion to add the Latex code to the Latex document"""
         triangle = TikZDraw([self.top_left.tikz, '--', self.right.tikz, '--', self.bottom_left.tikz, '--',
                              self.top_left.tikz], TikZOptions(self._line_width, **self._tikz_options))
         pic.append(triangle)

@@ -6,16 +6,35 @@ from ...text import Text
 
 
 class Circle(Block):
+    """Circle with inputs, outputs and text"""
 
     @property
     def size(self):
+        """Returns the size of a circle"""
         return self._radius, self._radius
 
     def __init__(self, position: (Point, Center), radius: float = 1, text: (Text, str) = None, inputs: dict = dict(left=1),
-                 outputs: dict = dict(right=1), **block_configuration):
-        super().__init__(Center.convert(position), text, (radius * 2, radius * 2), **block_configuration)
-        self._radius = radius
+                 outputs: dict = dict(right=1), text_configuration: dict = dict(), **block_configuration):
+        """
+             Initializes a circle and adds it to the active document
 
+             position:   center of the circle
+             radius:     radius of the circle
+             text:       text inside the box
+             inputs:     dictonary with the configuration of the inputs of a circle, possible keys:
+                             left, right, top, bottom:   number of inputs on each side
+                             "side" + _space:            distance of inputs on this side
+                             "side" + _text:             list with the texts at the inputs of this side
+                             "side" + _text_space:       distance of the text to the inputs of this side
+             outputs:    dictonary with the configuration of the inputs of a circle, same possible keys as for inputs
+             block_configuration:    further settings of a block, e.g. draw color or fill color
+        """
+
+        super().__init__(Center.convert(position), text, (radius * 2, radius * 2), text_configuration,
+                         **block_configuration)
+        self._radius = radius   # Set the radius
+
+        # Define inputs and outputs of the circle
         input_dict = {'left': ('west', -1, inputs.get('left', 0), Input, inputs.get('left_space', None),
                                inputs.get('left_text_space', 0.2), inputs.get('left_text', ())),
                       'top': ('north', 1, inputs.get('top', 0), Input, inputs.get('top_space', None),
@@ -37,6 +56,7 @@ class Circle(Block):
         self.set_in_output(input_dict, output_dict, self._get_in_output)
 
     def _get_in_output(self, in_out_dict):
+        """Function to calculate the positions of the inputs and outputs"""
         direction, sign, count, in_out, space, _, _ = in_out_dict
         y_list = Block.get_in_out_list(self._radius * 2, space, count)
 
@@ -48,6 +68,7 @@ class Circle(Block):
         return [in_out.convert(self._position.add(x, y, direction)) for x, y in zip(x_list, y_list)]
 
     def build(self, pic):
+        """Funtion to add the Latex code to the Latex document"""
         circle = TikZDraw([self._position.tikz, 'circle'],
                           options=TikZOptions(self._line_width, radius=str(self._radius) + 'cm', **self._tikz_options))
         pic.append(circle)

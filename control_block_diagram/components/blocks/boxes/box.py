@@ -5,15 +5,35 @@ from ...text import Text
 
 
 class Box(Block):
-    def __init__(self, position: (Point, list, tuple), size: tuple = (2.5, 1.5), text: (Text, str) = None,
-                 inputs: dict = dict(left=1), outputs: dict = dict(right=1), **block_configuration):
+    """
+        Rectangular box with text and inputs and outputs
+    """
+    def __init__(self, position: (Point, list, tuple), size: tuple = (2.5, 1.5), text: str = None,
+                 inputs: dict = dict(left=1), outputs: dict = dict(right=1), text_configuration: dict = dict(),
+                 **block_configuration):
+        """
+            Initializes a box and adds it to the active document
 
+            position:   center of the box or top left and bottom right point of the box
+            size:       size of the box in x and y direction
+            text:       text inside the box
+            inputs:     dictonary with the configuration of the inputs of a box, possible keys:
+                            left, right, top, bottom:   number of inputs on each side
+                            "side" + _space:            distance of inputs on this side
+                            "side" + _text:             list with the texts at the inputs of this side
+                            "side" + _text_space:       distance of the text to the inputs of this side
+            outputs:    dictonary with the configuration of the inputs of a box, same possible keys as for inputs
+            block_configuration:    further settings of a block, e.g. draw color or fill color
+        """
+
+        # Get the position and size of the block
         if isinstance(position, (list, tuple)):
             size = (abs((position[1] - position[0]).x), abs((position[1] - position[0]).y))
             position = Point.get_mid(*position)
 
-        super().__init__(position, text, size, **block_configuration)
+        super().__init__(position, text, size, text_configuration, **block_configuration)
 
+        # Define inputs and outputs of the block
         input_dict = {
             'left': (
                 self.left.add_y, 'west', self._size_y, inputs.get('left', 0), Input, inputs.get('left_space', None),
@@ -48,11 +68,13 @@ class Box(Block):
 
     @staticmethod
     def _get_in_output(in_out_dict):
+        """Function to calculate the positions of the inputs and outputs"""
         pos_func, direction, size, count, in_out, space, _, _ = in_out_dict
         pos_list = Block.get_in_out_list(size, space, count)
         return [in_out.convert(pos_func(pos, direction)) for pos in pos_list]
 
     def build(self, pic):
+        """Funtion to add the Latex code to the Latex document"""
         box = TikZDraw([self.top_left.tikz, 'rectangle', self.bottom_right.tikz],
                        TikZOptions(self._line_width, **self._tikz_options))
         pic.append(box)

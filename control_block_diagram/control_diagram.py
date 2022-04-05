@@ -9,24 +9,34 @@ from .pdf_viewer import PDFViewer
 
 
 class ControllerDiagram:
+    """
+        This is the base class for all diagrams. A diagram is automatically set as active diagram after instantiation
+         and all subsequent components are added to it. A diagram can finally be saved as a .tex or a .pdf file.
+    """
 
-    def __init__(self, data_type: (str, tuple, list) = (), **configuration):
+    def __init__(self, data_type: (str, tuple, list) = (), packages: (tuple, list) = ['upgreek'], **configuration):
+        """
+            Initializes a new diagram and sets it as the active diagram.
+                data_type:      Output file type
+                packages:       Required Latex Packages
+                configuration:  Possible default parameters for the entire diagram
+        """
         self._data_type = data_type if isinstance(data_type, (tuple, list)) else [data_type]
+        self._packages = packages
         self._pdf_name = None
         self._clean_tex = 'tex' not in self._data_type
         self._components = []
         self._pdf_viewer = None
         self._configuration_input = configuration
         self._configuration = dict()
-        self.set_document()
         self._doc = None
         self._temp_file = None
-        self._min_x = 0
-        self._min_y = 0
-        self._max_x = 0
-        self._max_y = 0
+        self.set_document()
 
     def set_document(self):
+        """
+             Sets a passed diagram as active diagram and loads the default parameters.
+        """
         Component._document = self
         self._configuration['draw'] = self._configuration_input.get('color', 'black')
         self._configuration['text_color'] = self._configuration_input.get('color', 'black')
@@ -40,6 +50,10 @@ class ControllerDiagram:
         Component.configuration = self._configuration
 
     def append(self, component):
+        """
+            Adds a new component to a diagram.
+                component: Component or list of components to be added
+        """
         if isinstance(component, (list, tuple)):
             for comp in component:
                 self.append(comp)
@@ -47,16 +61,26 @@ class ControllerDiagram:
             self._components.append(component)
 
     def build(self):
-        size = Component.get_size(self._components)
+        """
+            First creates a latex file from the added components. From this file a PDF file can be created and saved.
+        """
+        size = Component.get_size(self._components)     # Determines the size of the latex document
+        # Creates the latex document
         self._doc = Document(page_numbers=False, geometry_options={'includeheadfoot': False,
                                                                    'top': '0.3cm', 'left': '0.3cm',
                                                                    'paperwidth': str(size[0]) + 'cm',
                                                                    'paperheight': str(size[1]) + 'cm'})
-        self._doc.packages.append(Package('upgreek'))
+
+        # Adds the required latex packages to the document
+        for package in self._packages:
+            self._doc.packages.append(Package(package))
+
+        # Adds all components to the latex document
         with self._doc.create(TikZ()) as pic:
             for component in self._components:
                 component.build(pic)
 
+        # Opens the window for selecting the folder and entering the file name and generates the desired file
         for filename in self._get_filename():
             name, data_type = filename.split('.', 1)
             if data_type == 'pdf':
@@ -66,14 +90,24 @@ class ControllerDiagram:
                 self._doc.generate_tex(name)
 
     def _build_temp(self):
+        """
+             Creates a temporary PDF file to display it in the PDF Viewer.
+        """
         filename = tempfile.gettempdir() + r'\ControlBlockDiagram'
         self._temp_file = filename + '.pdf'
         self._doc.generate_pdf(filename, compiler='pdflatex', clean_tex=True)
 
     def _delete_temp(self):
+        """
+             Deletes the temporary PDF file.
+        """
         os.remove(self._temp_file)
 
     def show(self):
+        """
+            Displays the PDF file in the PDF Viewer. If it is a temporary PDF file, it will be created before and then
+            deleted after closing the window. The program will continue to run after the window is closed.
+        """
         if self._pdf_name is not None:
             self._pdf_viewer = PDFViewer(self._pdf_name)
             self._pdf_viewer.show_pdf()
@@ -85,6 +119,11 @@ class ControllerDiagram:
             self._delete_temp()
 
     def open(self):
+        """
+            Opens an existing PDF file in the PDF Viewer or creates a temporary PDF file. The PDF Viewer is started in
+            the background so that the program flow is not interrupted. The window is closed by the close method and
+            the temporary PDF file is deleted.
+        """
         if self._pdf_name is not None:
             self._pdf_viewer = PDFViewer(self._pdf_name)
         else:
@@ -94,11 +133,17 @@ class ControllerDiagram:
         self._pdf_viewer.open_pdf()
 
     def close(self):
+        """
+            Closes the PDF Viewer and deletes the temporary PDF file if necessary.
+        """
         self._pdf_viewer.close_pdf()
         if self._temp_file is not None:
             self._delete_temp()
 
     def _get_filename(self):
+        """
+             Creates the window for selecting the folder and entering the file name.
+        """
         win = Tk()
         win.withdraw()
         for data_type in self._data_type:

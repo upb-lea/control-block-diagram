@@ -1,140 +1,171 @@
-from pylatex import TikZDraw, TikZOptions
 from ..component import Component
 from ..text import Text
 from ..points import Point, Center
 
 
 class Block(Component):
+    """Base class for a block with trigonometric form"""
 
     @property
     def position(self):
+        """Returns the center of a shape"""
         return self._position
 
     @property
     def size(self):
+        """Returns the size in x and y direction of a shape"""
         return self._size_x, self._size_y
 
     @property
     def size_x(self):
+        """Returns the size in x direction of a shape"""
         return self._size_x
 
     @property
     def size_y(self):
+        """Returns the size in y direction of a shape"""
         return self._size_y
 
     @property
     def right(self):
+        """Returns the point of the right center of the block"""
         return self._position.add_x(self._size_x / 2, 'east')
 
     @property
     def left(self):
+        """Returns the point of the left center of the block"""
         return self._position.add_x(-self._size_x / 2, 'west')
 
     @property
     def top(self):
+        """Returns the point of the top center of the block"""
         return self._position.add_y(self._size_y / 2, 'north')
 
     @property
     def bottom(self):
+        """Returns the point of the bottom center of the block"""
         return self._position.add_y(-self._size_y / 2, 'south')
 
     @property
     def top_left(self):
+        """Returns the point of the top left corner of the block"""
         return self._position.add(-self._size_x / 2, self._size_y / 2)
 
     @property
     def top_right(self):
+        """Returns the point of the top right corner of the block"""
         return self._position.add(self._size_x / 2, self._size_y / 2)
 
     @property
     def bottom_left(self):
+        """Returns the point of the bottom left corner of the block"""
         return self._position.add(-self._size_x / 2, -self._size_y / 2)
 
     @property
     def bottom_right(self):
+        """Returns the point of the bottom right corner of the block"""
         return self._position.add(self._size_x / 2, -self._size_y / 2)
 
     @property
     def input(self):
+        """Returns all inputs of a block as a list"""
         return self._input_left + self._input_top + self._input_right + self._input_bottom
 
     @property
     def input_dict(self):
+        """Returns all inputs of a block as a dictonary"""
         return dict(left=self._input_left, top=self._input_top, right=self._input_right, bottom=self._input_bottom)
 
     @property
     def input_left(self):
+        """Returns all inputs on the left side of a block as a list"""
         return self._input_left
 
     @property
     def input_top(self):
+        """Returns all inputs on the top side of a block as a list"""
         return self._input_top
 
     @property
     def input_right(self):
+        """Returns all inputs on the right side of a block as a list"""
         return self._input_right
 
     @property
     def input_bottom(self):
+        """Returns all inputs on the bottom side of a block as a list"""
         return self._input_bottom
 
     @property
     def output(self):
+        """Returns all outputs of a block as a list"""
         return self._output_right + self._output_bottom + self._output_left + self._output_top
 
     @property
     def output_dict(self):
+        """Returns all outputs of a block as a dictonary"""
         return dict(left=self._output_left, top=self._output_top, right=self._output_right, bottom=self._output_bottom)
 
     @property
     def output_left(self):
+        """Returns all outputs on the left side of a block as a list"""
         return self._output_left
 
     @property
     def output_top(self):
+        """Returns all outputs on the top side of a block as a list"""
         return self._output_top
 
     @property
     def output_right(self):
+        """Returns all outputs on the right side of a block as a list"""
         return self._output_right
 
     @property
     def output_bottom(self):
+        """Returns all outputs on the bottom side of a block as a list"""
         return self._output_bottom
 
     @property
     def border(self):
+        """Returns the boundaries of a block as dictonary"""
         return dict(left=self.left.x, top=self.top.y, right=self.right.x, bottom=self.bottom.y)
 
-    def __init__(self, position: Point, text: (Text, str), size: tuple, **block_configuration):
+    def __init__(self, position: Point, text: (Text, str), size: tuple, text_configuration: dict = dict(),
+                 **block_configuration):
+        """Initializes a block and sets the default parameters"""
         super().__init__()
-        self._position = position
 
+        # Set the position
+        self._position = position
         if isinstance(position, Center):
             if position.vertical:
                 self._position = self._position.add_x(size[0] / 2)
             if position.horizontal:
                 self._position = self._position.sub_y(size[1] / 2)
 
+        # Set the default parameter
         self._tikz_options = dict()
 
         fill = block_configuration.get('fill', self._configuration['fill'])
         draw = block_configuration.get('draw', self._configuration['draw'])
-        self._line_width = block_configuration.get('line_width', self._configuration['line_width'])
+        line_width = block_configuration.get('line_width', self._configuration['line_width'])
 
         if isinstance(fill, str):
             self._tikz_options['fill'] = fill
         if isinstance(draw, str):
             self._tikz_options['draw'] = draw
+        elif draw is None:
+            self._tikz_options['draw'] = fill
+        if isinstance(line_width, str):
+            self._line_width = line_width
 
-        self._text = text if isinstance(text, Text) else Text(text)
-        (self._size_x, self._size_y) = size
+        self._text = Text(text, **text_configuration)     # Set the text
+        (self._size_x, self._size_y) = size     # Set the size
+        self._text_size = text_configuration.get('size', (max(self._size_x, 0.3), max(self._size_y, 0.3)))
+        self._set_border(self.top_left, self.top_right, self.bottom_left, self.bottom_right)    # Set the border
 
-        self._set_border(self.top_left, self.top_right, self.bottom_left, self.bottom_right)
-
-        self._input = []
-        self._output = []
-
+        # Create lists for the inputs and outputs
         self._input_left = []
         self._input_top = []
         self._input_bottom = []
@@ -155,13 +186,15 @@ class Block(Component):
         self._output_bottom_text = []
         self._output_right_text = []
 
-        self._plot_inout = False
-
+        # Define the text of a block
         if isinstance(self._text, Text):
             self._text.define(position=Point(self._position.x, self._position.y),
-                              size=(max(self._size_x, 0.3), max(self._size_y, 0.3)))
+                              size=self._text_size)
 
     def set_in_output(self, input_dict, output_dict, get_position):
+        """Set the inputs and outputs of a block, with a given function for getting the right positions"""
+
+        # Set the positions of the in- and outputs
         self._input_left = get_position(input_dict['left'])
         self._input_top = get_position(input_dict['top'])
         self._input_right = get_position(input_dict['right'])
@@ -171,6 +204,7 @@ class Block(Component):
         self._output_right = get_position(output_dict['right'])
         self._output_bottom = get_position(output_dict['bottom'])
 
+        # Set the texts of the in- and outputs
         self._input_left_text = self.set_in_out_text(self._input_left, input_dict['left'][-1], input_dict['left'][-2],
                                                      Point.add_x)
         self._input_top_text = self.set_in_out_text(self._input_top, input_dict['top'][-1][::-1], input_dict['top'][-2],
@@ -189,6 +223,7 @@ class Block(Component):
         self._output_bottom_text = self.set_in_out_text(self._output_bottom, output_dict['bottom'][-1][::-1],
                                                         output_dict['bottom'][-2], Point.add_y)
 
+        # Reverse the list so that the inputs and outputs can be output in the correct order
         self._input_top = self._input_top[::-1]
         self._input_bottom = self._input_bottom[::-1]
         self._output_top = self._output_top[::-1]
@@ -196,6 +231,7 @@ class Block(Component):
 
     @staticmethod
     def get_in_out_list(size: float, space: float, number: int):
+        """Funtion to get a list of the in- and outputs positions in one direction"""
         if number == 0:
             return []
         if number == 1:
@@ -209,8 +245,10 @@ class Block(Component):
 
     @staticmethod
     def set_in_out_text(point, text, space, add):
+        """Function to add a text to an in- or output"""
         space = 0 if space is None else space
         return [Text(text_, add(point_, space)) for point_, text_ in zip(point, text)]
 
     def build(self, pic):
+        """Generates the code which will be written into the latex file"""
         pass

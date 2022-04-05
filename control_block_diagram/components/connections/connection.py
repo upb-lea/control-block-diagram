@@ -32,7 +32,7 @@ class Connection(Component):
     def end(self):
         return self._points[-1]
 
-    def __init__(self, points: [Point], arrow: bool = True, text: str = None,
+    def __init__(self, points: [Point], arrow: bool = True, text: (str, Text) = None,
                  text_position: str = 'middle', text_align: str = 'top', distance_x: float = 0.4,
                  distance_y: float = 0.2, move_text: tuple = (0, 0), **connection_configuration):
         super().__init__()
@@ -41,7 +41,14 @@ class Connection(Component):
         self._tikz_option = '-latex' if arrow else ''
         self._line_width = connection_configuration.get('line_width', self._configuration['line_width'])
         self._draw = connection_configuration.get('draw', self._configuration['draw'])
-        self._text = Text(text, self.get_text_position(text_position, text_align, distance_x, distance_y, move_text))
+
+        if isinstance(text, Text):
+            self._text = text
+            self._text.define(position=self.get_text_position(text_position, text_align, distance_x, distance_y,
+                                                              move_text))
+        else:
+            self._text = Text(text, self.get_text_position(text_position, text_align, distance_x, distance_y,
+                                                           move_text))
 
     def __add__(self, other):
         return Connection(self._points + other.points, other.arrow)
