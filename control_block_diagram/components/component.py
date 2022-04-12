@@ -26,8 +26,19 @@ class Component:
         """Returns the bottom boundary of a component"""
         return self._border_bottom
 
-    def __init__(self):
-        """Initializes a component and adds it to the active diagram."""
+    @property
+    def level(self):
+        """Returns the level of a component"""
+        return self._level
+
+    @level.setter
+    def level(self, level: int = 0):
+        if isinstance(level, int):
+            self._level = level
+
+    def __init__(self, level: int = 0, *args, **kwargs):
+        """Initializes a component and adds it to the active diagram"""
+        self._level = level
         if Component._document is not None:
             Component._document.append(self)
         self._configuration = Component.configuration

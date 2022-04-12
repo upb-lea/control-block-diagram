@@ -1,7 +1,6 @@
 from pylatex import TikZDraw, TikZOptions
 from ..block import Block
 from ...points import Point, Input, Output
-from ...text import Text
 
 
 class Box(Block):
@@ -10,7 +9,7 @@ class Box(Block):
     """
     def __init__(self, position: (Point, list, tuple), size: tuple = (2.5, 1.5), text: str = None,
                  inputs: dict = dict(left=1), outputs: dict = dict(right=1), text_configuration: dict = dict(),
-                 **block_configuration):
+                 level: int = 0, *args, **kwargs):
         """
             Initializes a box and adds it to the active document
 
@@ -23,7 +22,7 @@ class Box(Block):
                             "side" + _text:             list with the texts at the inputs of this side
                             "side" + _text_space:       distance of the text to the inputs of this side
             outputs:    dictonary with the configuration of the inputs of a box, same possible keys as for inputs
-            block_configuration:    further settings of a block, e.g. draw color or fill color
+            level:      level of the component
         """
 
         # Get the position and size of the block
@@ -31,7 +30,7 @@ class Box(Block):
             size = (abs((position[1] - position[0]).x), abs((position[1] - position[0]).y))
             position = Point.get_mid(*position)
 
-        super().__init__(position, text, size, text_configuration, **block_configuration)
+        super().__init__(position, text, size, text_configuration, level, *args, **kwargs)
 
         # Define inputs and outputs of the block
         input_dict = {
@@ -64,7 +63,7 @@ class Box(Block):
                 outputs.get('bottom_text_space', 0.2), outputs.get('bottom_text', ()))
         }
 
-        self.set_in_output(input_dict, output_dict, self._get_in_output)
+        self.set_in_output(input_dict, output_dict, self._get_in_output, level)
 
     @staticmethod
     def _get_in_output(in_out_dict):
@@ -75,7 +74,8 @@ class Box(Block):
 
     def build(self, pic):
         """Funtion to add the Latex code to the Latex document"""
+
         box = TikZDraw([self.top_left.tikz, 'rectangle', self.bottom_right.tikz],
-                       TikZOptions(self._line_width, **self._tikz_options))
+                       TikZOptions(self._line_width, self._line_style, **self._tikz_options))
         pic.append(box)
         super().build(pic)

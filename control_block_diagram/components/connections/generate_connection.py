@@ -2,6 +2,7 @@ from ..points import Point
 
 
 def generate_connection(p1, p2, space_x, space_y, start_direction=None, end_direction=None):
+    """Function that generates a list of points for a connection between two points"""
 
     start_direction = get_start_direction(p1, p2) if start_direction is None else start_direction
     end_direction = get_end_direction(p1, p2) if end_direction is None else end_direction
@@ -10,6 +11,7 @@ def generate_connection(p1, p2, space_x, space_y, start_direction=None, end_dire
 
 
 def get_start_direction(p1: Point, p2: Point) -> str:
+    """Calculate the starting direction of a connection"""
     if p1.direction:
         return p1.direction
     elif p1.x == p2.x:
@@ -24,6 +26,7 @@ def get_start_direction(p1: Point, p2: Point) -> str:
 
 
 def get_end_direction(p1: Point, p2: Point) -> str:
+    """Calculate the ending direction of a connection"""
     if p2.direction:
         return p2.direction
     elif p1.x == p2.x:
@@ -38,10 +41,12 @@ def get_end_direction(p1: Point, p2: Point) -> str:
 
 
 def get_mid_x(p1: Point, p2: Point) -> float:
+    """Calculate the middle of the x-direction of to points"""
     return (p1.x + p2.x) / 2
 
 
 def get_mid_y(p1: Point, p2: Point) -> float:
+    """Calculate the middle of the y-direction of to points"""
     return (p1.y + p2.y) / 2
 
 

@@ -12,11 +12,12 @@ if __name__ == '__main__':
     Connection.connect(box_inp.output_right, add.input_left)
     box_int = Box(add.output_right[0].add_x(1.5), size=(1, 0.8), text=r'$\frac{1}{s}$')
     Connection.connect(add.output_right, box_int.input_left)
-    Connection.connect(box_int.output_right[0], box_int.output_right[0].add_x(2), text=r'$\underline{\Psi}_{\mathrm{r}}$',
-                       distance_y=0.3)
-    box_back = Box(box_int.position.sub_y(1.5), size=(1.8, 0.8), text=r'$\frac{R_{\mathrm{r}}}{L_{\mathrm{r}}}-\mathrm{j} \omega_{\mathrm{rs}}$')
+    Connection.connect(box_int.output_right[0], box_int.output_right[0].add_x(2),
+                       text=r'$\underline{\Psi}_{\mathrm{r}}$', distance_y=0.3)
+    box_back = Box(box_int.position.sub_y(1.5), size=(1.8, 0.8),
+                   text=r'$\frac{R_{\mathrm{r}}}{L_{\mathrm{r}}}-\mathrm{j} \omega_{\mathrm{rs}}$')
     con = Connection.connect(box_int.output_right[0].add_x(1), box_back.output_right[0], start_direction='south')
-    Circle(con.begin, radius=0.05, fill='black')
+    Circle(con.start, radius=0.05, fill='black')
     Connection.connect(box_back.input_left, add.input_bottom, text='-', text_position='end', text_align='right',
                        move_text=(-0.2, -0.2))
 

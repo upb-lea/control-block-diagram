@@ -42,7 +42,9 @@ class ControllerDiagram:
         self._configuration['text_color'] = self._configuration_input.get('color', 'black')
         self._configuration['draw'] = self._configuration_input.get('draw', self._configuration['draw'])
         self._configuration['fill'] = self._configuration_input.get('fill', 'white')
+        self._configuration['rounded_corners'] = self._configuration_input.get('rounded_corners', '0pt')
         self._configuration['line_width'] = self._configuration_input.get('line_width', 'thick')
+        self._configuration['line_style'] = self._configuration_input.get('line_style', 'solid')
         self._configuration['fontsize'] = self._configuration_input.get('fontsize', r'\normalsize')
         self._configuration['text_color'] = self._configuration_input.get('text_color',
                                                                           self._configuration['text_color'])
@@ -74,6 +76,9 @@ class ControllerDiagram:
         # Adds the required latex packages to the document
         for package in self._packages:
             self._doc.packages.append(Package(package))
+
+        # Sorts the components by level
+        self._components.sort(key=lambda comp: comp.level)
 
         # Adds all components to the latex document
         with self._doc.create(TikZ()) as pic:

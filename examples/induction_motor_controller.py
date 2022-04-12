@@ -220,8 +220,8 @@ def current_stage(emf_feedforward):
         con_i_sq = Connection.connect(alpha_beta_to_dq.output_left[1], add_i_sq.input_bottom[0], text='-',
                                       text_position='end', text_align='right', move_text=(-0.2, -0.2))
 
-        Text(position=con_i_sd.begin.add(-0.25, 0.25), text=r'$i_{\mathrm{sd}}$')
-        Text(position=con_i_sq.begin.add(-0.25, 0.25), text=r'$i_{\mathrm{sq}}$')
+        Text(position=con_i_sd.start.add(-0.25, 0.25), text=r'$i_{\mathrm{sd}}$')
+        Text(position=con_i_sq.start.add(-0.25, 0.25), text=r'$i_{\mathrm{sq}}$')
 
         Connection.connect(observer.output_left[0], alpha_beta_to_dq.input_bottom[0])
 
@@ -239,7 +239,7 @@ def current_stage(emf_feedforward):
 
         con_omega_2 = Connection.connect(feedforward.input_bottom[0].add(7, -4.0702), feedforward.input_bottom[0],
                                          text=r'$\omega_{\mathrm{me}}$', text_position='start', move_text=(-1, -0.1))
-        Connection.connect_to_line(con_omega_2, con_omega.begin, arrow=False)
+        Connection.connect_to_line(con_omega_2, con_omega.start, arrow=False)
         Connection.connect(feedforward.output_top[0], add_u_sq.input_bottom[0])
         Connection.connect(feedforward.output_top[1], add_u_sd.input_bottom[0])
 
@@ -256,7 +256,7 @@ def current_stage(emf_feedforward):
                                                             text_position='end', move_text=(-0.85, 0))],
                       i_q_ref=[add_i_sq.input_left[0], dict(text=r'$i^{*}_{\mathrm{sq}}$', distance_y=0.3,
                                                             text_position='end', move_text=(-0.35, 0))],
-                      omega=[con_omega_2.begin, dict(arrow=False)])
+                      omega=[con_omega_2.start, dict(arrow=False)])
 
         outputs = dict(S=pwm.output_right, psi_r=con_psi_r.points[1], omega_me=con_omega_2.points[1])
         connect_to_line = dict(i=[abc_to_alpha_beta.input_right, dict(draw=0.1, fill=False,

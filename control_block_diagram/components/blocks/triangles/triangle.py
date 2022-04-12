@@ -9,7 +9,7 @@ class Triangle(Block):
 
     def __init__(self, position: (Point, Center), size: tuple = (2.5, 1.5), text: (Text, str) = None,
                  inputs: dict = dict(left=1), outputs: dict = dict(right=1), text_configuration: dict = dict(),
-                 **block_configuration):
+                 level: int = 0, *args, **kwargs):
         """
             Initializes a triangle and adds it to the active document
 
@@ -22,10 +22,10 @@ class Triangle(Block):
                             "side" + _text:             list with the texts at the inputs of this side
                             "side" + _text_space:       distance of the text to the inputs of this side
             outputs:    dictonary with the configuration of the inputs of a triangle, same possible keys as for inputs
-            block_configuration:    further settings of a block, e.g. draw color or fill color
+            level:      level of the component
         """
 
-        super().__init__(position, text, size, text_configuration, **block_configuration)
+        super().__init__(position, text, size, text_configuration, level, *args, **kwargs)
 
         # Define inputs and outputs of the circle
         input_dict = {'left': (
@@ -54,7 +54,7 @@ class Triangle(Block):
                 self.bottom.add_x, 'south', self._size_x, outputs.get('bottom', 0), Output, outputs.get('bottom_space', None),
                 outputs.get('bottom_text_space', 0.2), outputs.get('bottom_text', ()))}
 
-        self.set_in_output(input_dict, output_dict, self._get_in_output)
+        self.set_in_output(input_dict, output_dict, self._get_in_output, level)
 
         self._text.define(position=self.position.add_x(-self.size[0] / 4))  # Define the text of the triangle
 
@@ -68,7 +68,7 @@ class Triangle(Block):
     def build(self, pic):
         """Funtion to add the Latex code to the Latex document"""
         triangle = TikZDraw([self.top_left.tikz, '--', self.right.tikz, '--', self.bottom_left.tikz, '--',
-                             self.top_left.tikz], TikZOptions(self._line_width, **self._tikz_options))
+                             self.top_left.tikz], TikZOptions(self._line_width, self._line_style, **self._tikz_options))
         pic.append(triangle)
         super().build(pic)
 

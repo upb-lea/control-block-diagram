@@ -2,8 +2,14 @@ from PyQt5 import QtCore, QtWebEngineWidgets
 
 
 class Window(QtWebEngineWidgets.QWebEngineView):
+    """
+        Window used by the PDF Viewer
+    """
     def __init__(self, pdf):
+        """Initializes a Window"""
         super(Window, self).__init__()
+
+        # Settings of the window
         self.settings().setAttribute(
             QtWebEngineWidgets.QWebEngineSettings.PluginsEnabled, True)
         self.settings().setAttribute(

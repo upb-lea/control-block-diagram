@@ -132,9 +132,9 @@ class Block(Component):
         return dict(left=self.left.x, top=self.top.y, right=self.right.x, bottom=self.bottom.y)
 
     def __init__(self, position: Point, text: (Text, str), size: tuple, text_configuration: dict = dict(),
-                 **block_configuration):
+                 level: int = 0, *args, **kwargs):
         """Initializes a block and sets the default parameters"""
-        super().__init__()
+        super().__init__(level, *args, **kwargs)
 
         # Set the position
         self._position = position
@@ -147,9 +147,11 @@ class Block(Component):
         # Set the default parameter
         self._tikz_options = dict()
 
-        fill = block_configuration.get('fill', self._configuration['fill'])
-        draw = block_configuration.get('draw', self._configuration['draw'])
-        line_width = block_configuration.get('line_width', self._configuration['line_width'])
+        fill = kwargs.get('fill', self._configuration['fill'])
+        draw = kwargs.get('draw', self._configuration['draw'])
+        rounded_corners = kwargs.get('rounded_corners', self._configuration['rounded_corners'])
+        line_width = kwargs.get('line_width', self._configuration['line_width'])
+        line_style = kwargs.get('line_style', self._configuration['line_style'])
 
         if isinstance(fill, str):
             self._tikz_options['fill'] = fill
@@ -157,10 +159,14 @@ class Block(Component):
             self._tikz_options['draw'] = draw
         elif draw is None:
             self._tikz_options['draw'] = fill
+        if isinstance(rounded_corners, str):
+            self._tikz_options['rounded corners'] = rounded_corners
         if isinstance(line_width, str):
             self._line_width = line_width
+        if isinstance(line_width, str):
+            self._line_style = line_style
 
-        self._text = Text(text, **text_configuration)     # Set the text
+        self._text = Text(text, level=level, text_configuration=text_configuration)     # Set the text
         (self._size_x, self._size_y) = size     # Set the size
         self._text_size = text_configuration.get('size', (max(self._size_x, 0.3), max(self._size_y, 0.3)))
         self._set_border(self.top_left, self.top_right, self.bottom_left, self.bottom_right)    # Set the border
@@ -191,7 +197,7 @@ class Block(Component):
             self._text.define(position=Point(self._position.x, self._position.y),
                               size=self._text_size)
 
-    def set_in_output(self, input_dict, output_dict, get_position):
+    def set_in_output(self, input_dict, output_dict, get_position, level=0, *args, **kwargs):
         """Set the inputs and outputs of a block, with a given function for getting the right positions"""
 
         # Set the positions of the in- and outputs
@@ -206,22 +212,22 @@ class Block(Component):
 
         # Set the texts of the in- and outputs
         self._input_left_text = self.set_in_out_text(self._input_left, input_dict['left'][-1], input_dict['left'][-2],
-                                                     Point.add_x)
+                                                     Point.add_x, level=level)
         self._input_top_text = self.set_in_out_text(self._input_top, input_dict['top'][-1][::-1], input_dict['top'][-2],
-                                                    Point.sub_y)
+                                                    Point.sub_y, level=level)
         self._input_right_text = self.set_in_out_text(self._input_right, input_dict['right'][-1],
-                                                      input_dict['right'][-2], Point.sub_x)
+                                                      input_dict['right'][-2], Point.sub_x, level=level)
         self._input_bottom_text = self.set_in_out_text(self._input_bottom, input_dict['bottom'][-1][::-1],
-                                                       input_dict['bottom'][-2], Point.add_y)
+                                                       input_dict['bottom'][-2], Point.add_y, level=level)
 
         self._output_left_text = self.set_in_out_text(self._output_left, output_dict['left'][-1],
-                                                      output_dict['left'][-2],  Point.add_x)
+                                                      output_dict['left'][-2],  Point.add_x, level=level)
         self._output_top_text = self.set_in_out_text(self._output_top, output_dict['top'][-1][::-1],
-                                                     output_dict['top'][-2], Point.sub_y)
+                                                     output_dict['top'][-2], Point.sub_y, level=level)
         self._output_right_text = self.set_in_out_text(self._output_right, output_dict['right'][-1],
-                                                       output_dict['right'][-2], Point.sub_x)
+                                                       output_dict['right'][-2], Point.sub_x, level=level)
         self._output_bottom_text = self.set_in_out_text(self._output_bottom, output_dict['bottom'][-1][::-1],
-                                                        output_dict['bottom'][-2], Point.add_y)
+                                                        output_dict['bottom'][-2], Point.add_y, level=level)
 
         # Reverse the list so that the inputs and outputs can be output in the correct order
         self._input_top = self._input_top[::-1]
@@ -244,10 +250,10 @@ class Block(Component):
         return [begin - ((number - 1) / 2 + i) * space for i in range(number)]
 
     @staticmethod
-    def set_in_out_text(point, text, space, add):
+    def set_in_out_text(point, text, space, add, level=0, *args, **kwargs):
         """Function to add a text to an in- or output"""
         space = 0 if space is None else space
-        return [Text(text_, add(point_, space)) for point_, text_ in zip(point, text)]
+        return [Text(text_, add(point_, space), level=level) for point_, text_ in zip(point, text)]
 
     def build(self, pic):
         """Generates the code which will be written into the latex file"""
