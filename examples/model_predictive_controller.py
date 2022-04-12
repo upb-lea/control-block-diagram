@@ -1,5 +1,5 @@
 from control_block_diagram import ControllerDiagram
-from control_block_diagram.components import Box, Connection, Point, Text, Circle
+from control_block_diagram.components import Box, Connection, Point, Text
 from control_block_diagram.predefined_components import Add
 
 

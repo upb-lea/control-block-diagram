@@ -1,6 +1,5 @@
 from control_block_diagram import ControllerDiagram
-from control_block_diagram.components import Box, Connection, Point, Circle, Text
-from control_block_diagram.predefined_components import Add
+from control_block_diagram.components import Box, Connection, Point, Text
 
 
 if __name__ == '__main__':
