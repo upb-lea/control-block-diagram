@@ -76,6 +76,6 @@ class Box(Block):
         """Funtion to add the Latex code to the Latex document"""
 
         box = TikZDraw([self.top_left.tikz, 'rectangle', self.bottom_right.tikz],
-                       TikZOptions(self._line_width, self._line_style, **self._tikz_options))
+                       TikZOptions(*self._style_args, **self._tikz_options))
         pic.append(box)
         super().build(pic)

@@ -71,7 +71,6 @@ class Circle(Block):
     def build(self, pic):
         """Funtion to add the Latex code to the Latex document"""
         circle = TikZDraw([self._position.tikz, 'circle'],
-                          options=TikZOptions(self._line_width, self._line_style, radius=str(self._radius) + 'cm',
-                                              **self._tikz_options))
+                          options=TikZOptions(radius=str(self._radius) + 'cm', *self._style_args, **self._tikz_options))
         pic.append(circle)
         super().build(pic)

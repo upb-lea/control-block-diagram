@@ -152,6 +152,7 @@ class Block(Component):
         rounded_corners = kwargs.get('rounded_corners', self._configuration['rounded_corners'])
         line_width = kwargs.get('line_width', self._configuration['line_width'])
         line_style = kwargs.get('line_style', self._configuration['line_style'])
+        self._style_args = []
 
         if isinstance(fill, str):
             self._tikz_options['fill'] = fill
@@ -162,9 +163,12 @@ class Block(Component):
         if isinstance(rounded_corners, str):
             self._tikz_options['rounded corners'] = rounded_corners
         if isinstance(line_width, str):
-            self._line_width = line_width
-        if isinstance(line_width, str):
-            self._line_style = line_style
+            if line_width in ['ultra thin', 'very thin', 'thin', 'semithick', 'thick', 'very thick', 'ultra thick']:
+                self._style_args.append(line_width)
+            else:
+                self._tikz_options['line width'] = line_width
+        if isinstance(line_style, str):
+            self._style_args.append(line_style)
 
         self._text = Text(text, level=level, text_configuration=text_configuration)     # Set the text
         (self._size_x, self._size_y) = size     # Set the size

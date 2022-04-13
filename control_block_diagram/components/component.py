@@ -70,11 +70,16 @@ class Component:
     @staticmethod
     def get_size(components: (list, tuple) = ()):
         """Calculates the size of a document"""
+        left, top, right, bottom = Component.get_border(components)
+        return (right - left) + 2, (top - bottom) + 2
+
+    @staticmethod
+    def get_border(components: (list, tuple) = ()):
         left = min([c.border_left for c in components])
         right = max([c.border_right for c in components])
         top = max([c.border_top for c in components])
         bottom = min([c.border_bottom for c in components])
-        return (right - left) + 2, (top - bottom) + 2
+        return left, top, right, bottom
 
 
 def set_document(doc):

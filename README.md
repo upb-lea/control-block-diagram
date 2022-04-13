@@ -1,2 +1,2 @@
-# control-block-diagram
-![](docs/pmsm_control_block_diagram.png)
+# Control Block Diagram
+![](docs/Control_Block_Diagram.png)

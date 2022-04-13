@@ -63,6 +63,12 @@ class Connection(Component):
         self._line_width = kwargs.get('line_width', self._configuration['line_width'])
         self._line_style = kwargs.get('line_style', self._configuration['line_style'])
         self._draw = kwargs.get('draw', self._configuration['draw'])
+        self._style_options = dict(draw=self._draw)
+        self._args = [self._line_style]
+        if self._line_width in ['ultra thin', 'very thin', 'thin', 'semithick', 'thick', 'very thick', 'ultra thick']:
+            self._args.append(self._line_width)
+        else:
+            self._style_options['line width'] = self._line_width
 
         if isinstance(text, Text):
             self._text = text
@@ -89,11 +95,10 @@ class Connection(Component):
         with pic.create(TikZDraw()) as path:
             path.append(self.tikz[0])
             for point in self.tikz[1:-1]:
-                path.append(TikZUserPath('edge', TikZOptions(self._draw, self._line_width, self._line_style)))
+                path.append(TikZUserPath('edge', TikZOptions(*self._args, **self._style_options)))
                 path.append(point)
                 path.append(point)
-            path.append(TikZUserPath('edge', TikZOptions(self._draw, self._line_width, self._line_style,
-                                                         self._tikz_option)))
+            path.append(TikZUserPath('edge', TikZOptions(self._tikz_option, *self._args, **self._style_options)))
             path.append(self._points[-1].tikz)
 
     def get_text_position(self, text_pos, align, distance_x, distance_y, move_text):
