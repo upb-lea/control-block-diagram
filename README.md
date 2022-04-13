@@ -39,10 +39,10 @@ The output of this code is:
 ## Examples
 There are some examples in the examples folder:
 
-*[Flux Observer](https://github.com/upb-lea/control-block-diagram/blob/main/examples/flux_observer.py)
-*[FPGA Board](https://github.com/upb-lea/control-block-diagram/blob/main/examples/fpga_example.py)
-*[Induction Motor Controller](https://github.com/upb-lea/control-block-diagram/blob/main/examples/induction_motor_controller.py)
-*[Model Predictive Controller](https://github.com/upb-lea/control-block-diagram/blob/main/examples/model_predictive_controller.py)
+* [Flux Observer](https://github.com/upb-lea/control-block-diagram/blob/main/examples/flux_observer.py)
+* [FPGA Board](https://github.com/upb-lea/control-block-diagram/blob/main/examples/fpga_example.py)
+* [Induction Motor Controller](https://github.com/upb-lea/control-block-diagram/blob/main/examples/induction_motor_controller.py)
+* [Model Predictive Controller](https://github.com/upb-lea/control-block-diagram/blob/main/examples/model_predictive_controller.py)
 
 ## Installation
 
