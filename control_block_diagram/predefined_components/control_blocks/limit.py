@@ -3,7 +3,21 @@ from control_block_diagram.components import Box, Connection
 
 
 class Limit(PredefinedComponent):
+    """
+        Limitation Block
+        Rectangular block with a limited graph
+    """
+
     def __init__(self, position, size, level: int = 0, *box_args, **box_kwargs):
+        """
+            Initializes a limit block
+                position:   position of the block
+                size:       size of the block
+                level:      level of the block
+                box_args:   arguments passed to the box
+                box_kwargs: keyword arguments passed to the box
+        """
+
         super().__init__(position)
 
         self._box = Box(position, size, level=level, *box_args, **box_kwargs)

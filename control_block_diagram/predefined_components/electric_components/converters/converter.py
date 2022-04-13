@@ -3,11 +3,31 @@ from control_block_diagram import Box, Connection, Text
 
 
 class Converter(PredefinedComponent):
+    """
+        Base class for converters
+        Square block with diagonal
+    """
 
     def __init__(self, position, size: float = 1.5, text_input: (str, iter) = '',
                  text_output: (str, iter) = '', input: str = 'left', input_number: int = 2, output: str = 'right',
                  output_number: int = 2, additional_inputs: dict = dict(), additional_outputs: dict = dict(),
                  input_space: float = 0.3, output_space: float = 0.3, *args, **kwargs):
+        """
+        Initializes a converter
+            position:           position of the block
+            size:               size of the block
+            text_input:         text on the input side
+            text_output:        text on th output side
+            input:              side of the inputs
+            input_number:       number of the inputs
+            output:             side of the outputs
+            output_number:      number of the outputs
+            additional_inputs:  dictonary of additional inputs (s. Box)
+            additional_outputs: dictonary of additional outputs (s. Box)
+            input_space:        space between the inputs
+            output_space:       space between the outputs
+        """
+
         super().__init__(position)
 
         additional_inputs[input] = input_number
@@ -16,9 +36,6 @@ class Converter(PredefinedComponent):
         additional_outputs[output + '_space'] = output_space
         self._box = Box(position, (size, size), inputs=additional_inputs, outputs=additional_outputs, *args, **kwargs)
         self._diagonal = Connection([self._box.bottom_left, self._box.top_right], arrow=False, *args, **kwargs)
-        self.input = self._box.input_dict
-        self.output = self._box.output_dict
-        self.border = self._box.border
 
         pos_text_input = self._box.top_left.add(size/4, -size/4)
         pos_text_output = self._box.bottom_right.add(-size/4, size/4)
@@ -27,3 +44,7 @@ class Converter(PredefinedComponent):
 
         self._text_input = Text(text_input, position=pos_text_input, *args)
         self._text_output = Text(text_output, position=pos_text_output, *kwargs)
+
+        self.input = self._box.input_dict
+        self.output = self._box.output_dict
+        self.border = self._box.border

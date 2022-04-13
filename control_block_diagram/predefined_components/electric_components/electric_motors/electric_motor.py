@@ -4,19 +4,40 @@ from pylatex import TikZDraw, TikZUserPath, TikZOptions
 
 
 class ElectricMotor(PredefinedComponent):
+    """
+        Base class for electrical motors
+        Circular motor with output shaft and sensors
+    """
     def __init__(self, position, text, size=1.5, input: str = 'left', input_number: int = 1, output: str = 'left',
                  orientation: str = 'bottom', input_space: float = 0.3, additional_inputs=dict(), level: int = 0, *args,
                  **kwargs):
+        """
+        Initializes an electric motor
+            position:           position of the motor
+            text:               text inside the motor
+            size:               size of the motor
+            input:              side of the inputs
+            input_number:       number of inputs
+            output:             side of the sensor output
+            orientation:        orientation of the output shaft
+            input_space:        space between the inputs
+            additional_inputs:  dictonary of additional inputs (s. Box)
+            level:              level of the motor
+        """
+
         super().__init__(position)
+
         self._size = size
         additional_inputs[input] = input_number
         additional_inputs[input + '_space'] = input_space
+
         self._circle = Circle(position, radius=size / 2, text=text, inputs=additional_inputs,
                               outputs={orientation: 2, orientation + '_space': size * 0.2}, level=level+1, *args,
                               **kwargs)
 
         box_pos = (self._circle.output[0] + self._circle.output[1]) / 2
         box_size = 2 / 3 * size
+
         if orientation == 'right':
             self._box = Box([self._circle.output_right[0], self._circle.output_right[1].add_x(box_size)], level=level,
                             *args, **kwargs)

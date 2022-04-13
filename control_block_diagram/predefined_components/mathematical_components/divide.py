@@ -3,8 +3,22 @@ from control_block_diagram.components import Box
 
 
 class Divide(PredefinedComponent):
+    """
+        Rectangular divide block
+    """
+
     def __init__(self, position, size: (tuple, list) = (0.4, 0.8), inputs: str = 'left', input_space=0.4,
                  operations='*/', box_kwargs: dict = dict(), *args, **kwargs):
+        """
+        Initializes a divide block
+            position:       position of the block
+            size:           size of the block
+            inputs:         side of the inputs
+            input_space:    space between the inputs
+            operations:     string of operations
+            box_kwargs:     arguments passsed to the box
+
+        """
         super().__init__(position)
 
         if inputs == 'left':
@@ -16,7 +30,7 @@ class Divide(PredefinedComponent):
         elif inputs == 'top':
             output = 'bottom'
         else:
-            raise Exception(f'{inputs} is an invalid page for the inputs.')
+            raise Exception(f'{inputs} is an invalid side for the inputs.')
 
         input_text = []
         for op in operations:
