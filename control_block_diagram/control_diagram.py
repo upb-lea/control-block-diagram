@@ -21,10 +21,10 @@ class ControllerDiagram:
                 packages:       Required Latex Packages
                 configuration:  Possible default parameters for the entire diagram
         """
-        self._data_type = data_type if isinstance(data_type, (tuple, list)) else [data_type]
+        self._data_type = None # data_type if isinstance(data_type, (tuple, list)) else [data_type]
         self._packages = packages
         self._pdf_name = None
-        self._clean_tex = 'tex' not in self._data_type
+        self._clean_tex = None # 'tex' not in self._data_type
         self._components = []
         self._pdf_viewer = None
         self._configuration_input = configuration
@@ -62,11 +62,33 @@ class ControllerDiagram:
         else:
             self._components.append(component)
 
-    def build(self):
+    def save(self, *data_type):
         """
             First creates a latex file from the added components. From this file a PDF file can be created and saved.
         """
-        size = Component.get_size(self._components)     # Determines the size of the latex document
+
+        # Store the data types
+        self._data_type = data_type if isinstance(data_type, (tuple, list)) else [data_type]
+        self._clean_tex = 'tex' not in self._data_type
+
+        # build the pylatex document
+        self._build()
+
+        # Opens the window for selecting the folder and entering the file name and generates the desired file
+        for filename in self._get_filename():
+            name, data_type = filename.split('.', 1)
+            if data_type == 'pdf':
+                self._doc.generate_pdf(name, compiler='pdflatex', clean_tex=self._clean_tex)
+                self._pdf_name = filename
+            elif data_type == 'tex' and 'pdf' not in self._data_type:
+                self._doc.generate_tex(name)
+
+    def _build(self):
+        """
+            Builds the pylatex document
+        """
+
+        size = Component.get_size(self._components)  # Determines the size of the latex document
         # Creates the latex document
         self._doc = Document(page_numbers=False, geometry_options={'includeheadfoot': False,
                                                                    'top': '0.3cm', 'left': '0.3cm',
@@ -85,21 +107,14 @@ class ControllerDiagram:
             for component in self._components:
                 component.build(pic)
 
-        # Opens the window for selecting the folder and entering the file name and generates the desired file
-        for filename in self._get_filename():
-            name, data_type = filename.split('.', 1)
-            if data_type == 'pdf':
-                self._doc.generate_pdf(name, compiler='pdflatex', clean_tex=self._clean_tex)
-                self._pdf_name = filename
-            elif data_type == 'tex':
-                self._doc.generate_tex(name)
-
     def _build_temp(self):
         """
              Creates a temporary PDF file to display it in the PDF Viewer.
         """
         filename = tempfile.gettempdir() + r'\ControlBlockDiagram'
         self._temp_file = filename + '.pdf'
+        if self._doc is None:
+            self._build()
         self._doc.generate_pdf(filename, compiler='pdflatex', clean_tex=True)
 
     def _delete_temp(self):
@@ -156,11 +171,11 @@ class ControllerDiagram:
                 filetypes = (('Portable Document Format (*.pdf)', '*.pdf'), ('All Files', '*.*'))
                 yield filedialog.asksaveasfilename(initialdir='/', title='Save as', filetypes=filetypes,
                                                    defaultextension='.pdf')
-            elif 'tex' == data_type:
+            elif 'tex' == data_type and 'pdf' not in self._data_type:
                 filetypes = (('TeX Document (*.tex)', '*.tex'), ('All Files', '*.*'))
                 yield filedialog.asksaveasfilename(initialdir='/', title='Save as', filetypes=filetypes,
                                                    defaultextension='.tex')
-            else:
+            elif data_type not in ['pdf', 'tex']:
                 raise ValueError(
                     f'The file type {data_type} is not supported. Use the Portable Document Format (pdf) or Tex'
                     f' Document (tex) file type.')

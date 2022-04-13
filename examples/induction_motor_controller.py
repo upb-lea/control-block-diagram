@@ -4,6 +4,8 @@ from control_block_diagram.predefined_components import DqToAlphaBetaTransformat
     AlphaBetaToDqTransformation, Add, PIController, DcConverter, Divide, IController, SCIM, Limit
 
 
+# Create new Boxes with additional lines inside
+
 class PsiOptBox(Box):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -16,19 +18,6 @@ class PsiOptBox(Box):
               self.bottom.add_y(self._size_y * by),
               self.top_right.sub(self._size_x * bx, self._size_y * (0.1 + by))],
              angles=[{'in': 110, 'out': -20}, {'in': 200, 'out': 70}], arrow=False)
-
-
-class LimitBox(Box):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        bx = 0.1
-        by = 0.1
-        le = (1 - 2 * bx) / 3
-
-        Connection([self.bottom_left.add(self._size_x * bx, self._size_y * by),
-                    self.bottom_left.add(self._size_x * bx + le, self._size_y * by),
-                    self.top_right.sub(self._size_x * bx + le, self._size_y * by),
-                    self.top_right.sub(self._size_x * bx, self._size_y * by)], arrow=False)
 
 
 class TMaxPsiBox(Box):
@@ -45,6 +34,8 @@ class TMaxPsiBox(Box):
         Path([self.left.add_x(bx), self.bottom_right.add(-scale * bx, scale * by)], arrow=False,
              angles=[{'in': 180, 'out': -35}])
 
+
+# Block building functions
 
 def omega_stage(start, control_task):
     space = 1 if control_task == 'SC' else 1.5
@@ -286,25 +277,33 @@ def series_dc_stage(emf_feedforward):
 
 if __name__ == '__main__':
 
+    # Initialize a new block diagram
+    document = ControllerDiagram()
+
+    # Parameters for the building functions
     env_id = 'Cont-SC-SCIM-v0'
     control_task = env_id.split('-')[1]
     emf_feedforward = True
-    document = ControllerDiagram('pdf')
-    start = Point(0, 0)
 
+    # Building functions
     stages = [omega_stage, torque_stage, current_stage(emf_feedforward), series_dc_stage(emf_feedforward)]
+
+    # Define diffrent help parameters
+    start = Point(0, 0)
     inputs = dict()
     outputs = dict()
     connections = dict()
     connect_to_lines = dict()
 
-    for idx, stage in enumerate(stages):
+    # Build the diffrent blocks
+    for stage in stages:
         start, inputs_, outputs_, connect_to_lines_, connections_ = stage(start, control_task)
         inputs = {**inputs, **inputs_}
         outputs = {**outputs, **outputs_}
         connect_to_lines = {**connect_to_lines, **connect_to_lines_}
         connections = {**connections, **connections_}
 
+    # Connect the blocks using the help parameters
     for key in inputs.keys():
         if key in outputs.keys():
             connections[key] = Connection.connect(outputs[key], inputs[key][0], **inputs[key][1])
@@ -313,6 +312,5 @@ if __name__ == '__main__':
         if key in connections.keys():
             Connection.connect_to_line(connections[key], connect_to_lines[key][0], **connect_to_lines[key][1])
 
-    document.build()
+    # Show the document in the PDF Viewer
     document.show()
-

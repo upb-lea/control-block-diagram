@@ -3,7 +3,11 @@ from control_block_diagram.components import Box, Connection, Point, Text
 
 
 if __name__ == '__main__':
-    doc = ControllerDiagram('pdf')
+
+    # Initialize a new block diagram
+    doc = ControllerDiagram()
+
+    # Add components to the document
     box_fpga = Box(Point(4, 0), size=(9.5, 7), fill='{rgb,255:red,200;green,200;blue,200}')
     Text(text='FPGA', position=box_fpga.top.add_y(0.5), text_size=r'\Huge')
     box_serial_int = Box(Point(0, 0), size=(1, 3), text='Serial Interface', fill='black',
@@ -63,5 +67,8 @@ if __name__ == '__main__':
     Connection.connect(box_spi_3.output_right[0], box_spi_3.output_right[0].add_x(1.5), text='Output',
                        text_position='end', line_width='very thick')
 
-    doc.build()
+    # Save the document
+    doc.save('pdf')
+
+    # Show the document in the PDF Viewer
     doc.show()
