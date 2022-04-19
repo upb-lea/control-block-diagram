@@ -2,9 +2,9 @@
 ![](docs/Control_Block_Diagram.png)
 
 [**Overview**](#overview)
-|[**Quickstart**](#getting-started)
-|[**Examples**](#examples)
-|[**Installation**](#installation)
+| [**Quickstart**](#getting-started)
+| [**Examples**](#examples)
+| [**Installation**](#installation)
 
 ## Overview
 The control-block-diagram package is a Python Toolbox for drawing block diagrams. It is build
