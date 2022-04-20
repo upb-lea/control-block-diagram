@@ -58,18 +58,20 @@ class Text(Component):
         # set the configuration of the text
         self._color = text_configuration.get('text_color', self._configuration['text_color'])
         self._font_size = text_configuration.get('fontsize', self._configuration['fontsize'])
+        self._font = text_configuration.get('font', self._configuration['font'])
         self._rotate = text_configuration.get('rotate', 0)
         self._options = {'align': 'center', 'text width': str(self._size[0]) + 'cm', 'text': self._color,
-                         'font': self._font_size, 'rotate': self._rotate}
+                         'font': self._font_size + self._font, 'rotate': self._rotate}
 
     def define(self, **kwargs):
         """Function to change position and visual representation of the text afterwards"""
         self._position = kwargs.get('position', self._position)
         self._size = kwargs.get('size', self._size)
         self._font_size = kwargs.get('fontsize', self._font_size)
+        self._font = kwargs.get('font', self._font)
         self._rotate = kwargs.get('rotate', self._rotate)
         self._options = {'align': 'center', 'text width': str(self._size[0]) + 'cm', 'text': self._color,
-                         'font': self._font_size, 'rotate': self._rotate}
+                         'font': self._font_size + self._font, 'rotate': self._rotate}
 
         top = self._position[1] + self._size[1] / 2
         self._text_position = [TikZCoordinate(self._position.x, top - (i + 1) / (self._len_text + 1) * self._size[1])
@@ -106,4 +108,5 @@ class Text(Component):
         """Funtion to add the Latex code to the Latex document"""
         for text, pos in zip(self._text, self._text_position):
             if text != '':
+                print(self._options['font'])
                 pic.append(TikZNode(text=text, at=pos, handle='box', options=TikZOptions(**self._options)))

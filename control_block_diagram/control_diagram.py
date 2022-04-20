@@ -46,6 +46,7 @@ class ControllerDiagram:
         self._configuration['line_width'] = self._configuration_input.get('line_width', 'thick')
         self._configuration['line_style'] = self._configuration_input.get('line_style', 'solid')
         self._configuration['fontsize'] = self._configuration_input.get('fontsize', r'\normalsize')
+        self._configuration['font'] = self._configuration_input.get('font', r'')
         self._configuration['text_color'] = self._configuration_input.get('text_color',
                                                                           self._configuration['text_color'])
 

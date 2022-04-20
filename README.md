@@ -14,7 +14,7 @@ usual building blocks, i.e., PI-Controllers, Adders, Multiplier. It is also poss
 define own blocks. 
 
 ## Getting Started
-A basic routine is as simple as
+A basic routine is as simple as:
 ```py
 from control_block_diagram import ControllerDiagram
 from control_block_diagram import Point, Box, Connection
@@ -26,6 +26,7 @@ if __name__ == '__main__':
     box_control = Box(Point(0, 0), text='Control')
     box_block = Box(box_control.position.add_x(3), text='Block')
     box_diagram = Box(box_block.position.add_x(3), text='Diagram')
+
     Connection.connect(box_control.output, box_block.input)
     Connection.connect(box_block.output, box_diagram.input)
     
@@ -47,7 +48,7 @@ There are some examples in the examples folder:
 ## Installation
 
 
-- Install from Github source:
+- Install from GitHub source:
 
 ```
 git clone git@github.com:upb-lea/control-block-diagram.git 
