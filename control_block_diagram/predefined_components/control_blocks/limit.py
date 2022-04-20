@@ -11,11 +11,11 @@ class Limit(PredefinedComponent):
     def __init__(self, position, size, level: int = 0, *box_args, **box_kwargs):
         """
             Initializes a limit block
-                position:   position of the block
-                size:       size of the block
-                level:      level of the block
-                box_args:   arguments passed to the box
-                box_kwargs: keyword arguments passed to the box
+                :param position:   position of the block
+                :param size:       size of the block
+                :param level:      level of the block
+                :param box_args:   arguments passed to the box
+                :param box_kwargs: keyword arguments passed to the box
         """
 
         super().__init__(position)

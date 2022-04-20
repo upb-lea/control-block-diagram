@@ -14,18 +14,18 @@ class PIController(PredefinedComponent):
                  output_space: float = 0.3, *args, **kwargs):
         """
         Initializes an pi-controller block
-            position:           position of the block
-            size:               size of the block
-            text:               text above the block
-            text_configuration: arguments passed to the text above
-            input:              side of the inputs
-            input_number:       number of inputs
-            output:             side of the outputs
-            output_number:      number of outputs
-            additional_inputs:  dictonary of additional inputs (s. Box)
-            additional_outputs: dictonary of additional outputs (s. Box)
-            input_space:        space between the inputs
-            output_space:       space between the outputs
+            :param position:           position of the block
+            :param size:               size of the block
+            :param text:               text above the block
+            :param text_configuration: arguments passed to the text above
+            :param input:              side of the inputs
+            :param input_number:       number of inputs
+            :param output:             side of the outputs
+            :param output_number:      number of outputs
+            :param additional_inputs:  dictonary of additional inputs (s. Box)
+            :param additional_outputs: dictonary of additional outputs (s. Box)
+            :param input_space:        space between the inputs
+            :param output_space:       space between the outputs
         """
 
         super().__init__(position)

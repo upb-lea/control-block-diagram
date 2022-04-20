@@ -37,7 +37,11 @@ class Component:
             self._level = level
 
     def __init__(self, level: int = 0, *args, **kwargs):
-        """Initializes a component and adds it to the active diagram"""
+        """
+        Initializes a component and adds it to the active diagram
+
+            :param level: level of the component
+        """
         self._level = level
         if Component._document is not None:
             Component._document.append(self)

@@ -133,7 +133,16 @@ class Block(Component):
 
     def __init__(self, position: Point, text: (Text, str), size: tuple, text_configuration: dict = dict(),
                  level: int = 0, *args, **kwargs):
-        """Initializes a block and sets the default parameters"""
+        """
+            Initializes a block and sets the default parameters
+
+            :param position:    position of the block
+            :param text:        text inside the block
+            :param size:        size of the block
+            :param text_configuration: dictionary of arguments passed to the text
+            :param level:       level of the block
+        """
+
         super().__init__(level, *args, **kwargs)
 
         # Set the position

@@ -32,11 +32,11 @@ class Text(Component):
                  text_configuration: dict = dict(), level: int = 0, *args, **kwargs):
         """
             Initializes a text
-                text:               string of the text
-                position:           position of the text
-                size:               size of the text box
-                text_configuration: visual presentation of the text (possible keys: text_color, fontsize, rotate)
-                level:              level of the text
+                :param text:               string of the text
+                :param position:           position of the text
+                :param size:               size of the text box
+                :param text_configuration: visual presentation of the text (possible keys: text_color, fontsize, rotate)
+                :param level:              level of the text
         """
 
         super().__init__(level, *args, **kwargs)

@@ -5,13 +5,23 @@ from ...text import Text
 
 
 class CustomBlock(Block):
+    """Block with a custom shape"""
 
     @property
     def points(self):
+        """Returns the points of a custom block"""
         return self._points
 
     def __init__(self, points: [Point], text: (Text, str) = None, text_configuration: dict = dict(), level: int = 0,
                  *args, **kwargs):
+        """
+        Initialization of a custom block
+
+            :param points:      list of the corner points of the block
+            :param text:        text inside the block
+            :param text_configuration: dictionary of arguments passed to the text
+            :param level:       level of the component
+        """
 
         x_val = [p.x for p in points]
         y_val = [p.y for p in points]

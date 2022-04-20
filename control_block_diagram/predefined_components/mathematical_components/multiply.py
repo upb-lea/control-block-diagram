@@ -12,12 +12,12 @@ class Multiply(PredefinedComponent):
                  **kwargs):
         """
         Initializes a multiply block
-            position:       position of the multiply block
-            size:           size of the multiply block
-            inputs:         inputs of the multiply block (s. box)
-            outputs:        outputs of the multiply block (s. box)
-            box_kwargs:     arguments passed to the box
-            cross_kwargs:   arguments passed to the cross
+            :param position:       position of the multiply block
+            :param size:           size of the multiply block
+            :param inputs:         inputs of the multiply block (s. box)
+            :param outputs:        outputs of the multiply block (s. box)
+            :param box_kwargs:     arguments passed to the box
+            :param cross_kwargs:   arguments passed to the cross
         """
 
         super().__init__(position)

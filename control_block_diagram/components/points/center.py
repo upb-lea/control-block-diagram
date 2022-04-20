@@ -17,7 +17,16 @@ class Center(Point):
         return self._vertical
 
     def __init__(self, x: float, y: float, direction: str = None, horizontal: bool = False, vertical: bool = False):
-        """initializes a centered point"""
+        """
+        Initializes a centered point
+
+            :param x:           x-coordinate
+            :param y:           y-coordinate
+            :param direction:   start/end-direction
+            :param horizontal:  boolean whether horizontally centered
+            :param vertical:    boolean whether vertically centered
+        """
+
         super().__init__(x, y, direction)
         self._horizontal = horizontal
         self._vertical = vertical

@@ -43,17 +43,19 @@ class Connection(Component):
 
     def __init__(self, points: [Point], arrow: bool = True, text: (str, Text) = None,
                  text_position: str = 'middle', text_align: str = 'top', distance_x: float = 0.4,
-                 distance_y: float = 0.2, move_text: tuple = (0, 0),  *args, **kwargs):
+                 distance_y: float = 0.2, move_text: tuple = (0, 0), text_configuration: dict = dict(), *args,
+                 **kwargs):
         """
         Initializes a conncetion
-            points:         list of points of the connection
-            arrow:          arrow at the end of a connection
-            text:           text at a conncetion
-            text_position:  position of the text
-            text_align:     align of the text
-            distance_x:     distance of the text to the connection in x direction
-            distance_y:     distance of the text to the connection in y direction
-            move_text:      free movement of the text
+
+            :param points:         list of points of the connection
+            :param arrow:          arrow at the end of a connection
+            :param text:           text at a conncetion
+            :param text_position:  position of the text
+            :param text_align:     align of the text
+            :param distance_x:     distance of the text to the connection in x direction
+            :param distance_y:     distance of the text to the connection in y direction
+            :param move_text:      free movement of the text
         """
 
         super().__init__(*args, **kwargs)
@@ -73,10 +75,10 @@ class Connection(Component):
         if isinstance(text, Text):
             self._text = text
             self._text.define(position=self.get_text_position(text_position, text_align, distance_x, distance_y,
-                                                              move_text))
+                                                              move_text), **text_configuration)
         else:
             self._text = Text(text, self.get_text_position(text_position, text_align, distance_x, distance_y,
-                                                           move_text))
+                                                           move_text), text_configuration=text_configuration)
 
     def __add__(self, other):
         return Connection(self._points + other.points, other.arrow)
@@ -142,43 +144,46 @@ class Connection(Component):
     def connect(p1: Point, p2: Point, space_x: float = 1, space_y: float = 1, arrow: bool = True,
                 text: (str, iter) = None, text_position: (str, iter) = 'middle',
                 text_align: (str, iter) = 'top', distance_x: float = 0.4,  distance_y: float = 0.25,
-                move_text: tuple = (0, 0), start_direction: str = None, end_direction: str = None, *args, **kwargs):
+                move_text: tuple = (0, 0), start_direction: str = None, end_direction: str = None,
+                text_configuration: dict = dict(), *args, **kwargs):
         """Function that conncets two points"""
 
         if isinstance(p1, (list, tuple)) and isinstance(p2, (list, tuple)):
             if isinstance(text, (list, tuple)):
                 return [Connection.connect(p1_, p2_, space_x, space_y, arrow, text_, text_position,
                                            text_align, distance_x, distance_y, move_text, start_direction,
-                                           end_direction, *args, **kwargs)
+                                           end_direction, text_configuration, *args, **kwargs)
                         for p1_, p2_, text_ in zip(p1, p2, text)]
             else:
                 return [Connection.connect(p1_, p2_, space_x, space_y, arrow, text, text_position,
                                            text_align, distance_x, distance_y, move_text, start_direction,
-                                           end_direction, *args, **kwargs)
+                                           end_direction, text_configuration, *args, **kwargs)
                         for p1_, p2_ in zip(p1, p2)]
         else:
             connection = Connection(generate_connection(p1, p2, space_x, space_y, start_direction, end_direction),
                                     arrow, text=text, text_position=text_position,
                                     text_align=text_align, distance_x=distance_x, distance_y=distance_y,
-                                    move_text=move_text, *args, **kwargs)
+                                    move_text=move_text, text_configuration=text_configuration, *args, **kwargs)
 
             return connection
 
     @staticmethod
     def connect_to_line(con, point, arrow: bool = True, text: (str, iter) = None,
                         text_position: (str, iter) = 'middle', text_align: (str, iter) = 'top', distance_x: float = 0.4,
-                        distance_y: float = 0.25, move_text: tuple = (0, 0), fill='black', draw=0.05, section=0, *args,
-                        **kwargs):
+                        distance_y: float = 0.25, move_text: tuple = (0, 0), fill='black', draw=0.05, section=0,
+                        text_configuration: dict = dict(), *args, **kwargs):
         """Function that conncets a line to a point"""
 
         if isinstance(con, (list, tuple)) and isinstance(point, (list, tuple)):
             if isinstance(text, (list, tuple)):
                 return [Connection.connect_to_line(con_, point_, arrow, text_, text_position, text_align,
-                                                   distance_x, distance_y, move_text, fill, draw, *args, **kwargs)
+                                                   distance_x, distance_y, move_text, fill, draw, section,
+                                                   text_configuration, *args, **kwargs)
                         for con_, point_, text_ in zip(con, point, text)]
             else:
                 return [Connection.connect_to_line(con_, point_, arrow, text, text_position, text_align,
-                                                   distance_x, distance_y, move_text, fill, draw, *args, **kwargs)
+                                                   distance_x, distance_y, move_text, fill, draw, section,
+                                                   text_configuration, *args, **kwargs)
                         for con_, point_ in zip(con, point)]
         else:
             if section >= len(con.points) - 1:
@@ -208,4 +213,5 @@ class Connection(Component):
 
             return Connection.connect(point_start, point, arrow=arrow, text=text,
                                       text_position=text_position, text_align=text_align, distance_x=distance_x,
-                                      distance_y=distance_y, move_text=move_text, *args, **kwargs)
+                                      distance_y=distance_y, move_text=move_text, text_configuration=text_configuration,
+                                      *args, **kwargs)

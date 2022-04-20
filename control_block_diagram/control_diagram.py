@@ -11,24 +11,23 @@ from .pdf_viewer import PDFViewer
 class ControllerDiagram:
     """
         This is the base class for all diagrams. A diagram is automatically set as active diagram after instantiation
-         and all subsequent components are added to it. A diagram can finally be saved as a .tex or a .pdf file.
+        and all subsequent components are added to it. A diagram can finally be saved as a .tex or a .pdf file.
     """
 
-    def __init__(self, data_type: (str, tuple, list) = (), packages: (tuple, list) = ['upgreek'], **configuration):
+    def __init__(self, packages: (tuple, list) = ('upgreek',), **configuration):
         """
             Initializes a new diagram and sets it as the active diagram.
-                data_type:      Output file type
-                packages:       Required Latex Packages
-                configuration:  Possible default parameters for the entire diagram
+                :param packages:       Required Latex Packages
+                :param configuration:  Possible default parameters for the entire diagram
         """
-        self._data_type = None # data_type if isinstance(data_type, (tuple, list)) else [data_type]
         self._packages = packages
-        self._pdf_name = None
-        self._clean_tex = None # 'tex' not in self._data_type
-        self._components = []
-        self._pdf_viewer = None
         self._configuration_input = configuration
         self._configuration = dict()
+        self._data_type = None
+        self._pdf_name = None
+        self._clean_tex = None
+        self._components = []
+        self._pdf_viewer = None
         self._doc = None
         self._temp_file = None
         self.set_document()

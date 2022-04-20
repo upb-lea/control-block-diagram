@@ -17,18 +17,19 @@ class Circle(Block):
                  inputs: dict = dict(left=1), outputs: dict = dict(right=1), text_configuration: dict = dict(),
                  level: int = 0, *args, **kwargs):
         """
-             Initializes a circle and adds it to the active document
+        Initializes a circle and adds it to the active document
 
-             position:   center of the circle
-             radius:     radius of the circle
-             text:       text inside the box
-             inputs:     dictonary with the configuration of the inputs of a circle, possible keys:
-                             left, right, top, bottom:   number of inputs on each side
-                             "side" + _space:            distance of inputs on this side
-                             "side" + _text:             list with the texts at the inputs of this side
-                             "side" + _text_space:       distance of the text to the inputs of this side
-             outputs:    dictonary with the configuration of the inputs of a circle, same possible keys as for inputs
-             level:      level of the component
+             :param position:   center of the circle
+             :param radius:     radius of the circle
+             :param text:       text inside the box
+             :param inputs:     dictonary with the configuration of the inputs of a circle, possible keys:
+                                left, right, top, bottom:   number of inputs on each side
+                                "side" + _space:            distance of inputs on this side
+                                "side" + _text:             list with the texts at the inputs of this side
+                                "side" + _text_space:       distance of the text to the inputs of this side
+             :param outputs:    dictonary with the configuration of the inputs of a circle, same possible keys as for inputs
+             :param text_configuration: dictionary of arguments passed to the text
+             :param level:      level of the component
         """
 
         super().__init__(Center.convert(position), text, (radius * 2, radius * 2), text_configuration, level, *args,

@@ -8,15 +8,16 @@ class Divide(PredefinedComponent):
     """
 
     def __init__(self, position, size: (tuple, list) = (0.4, 0.8), inputs: str = 'left', input_space=0.4,
-                 operations='*/', box_kwargs: dict = dict(), *args, **kwargs):
+                 operations='*/', text_configuration: dict = dict(), box_kwargs: dict = dict(), *args, **kwargs):
         """
         Initializes a divide block
-            position:       position of the block
-            size:           size of the block
-            inputs:         side of the inputs
-            input_space:    space between the inputs
-            operations:     string of operations
-            box_kwargs:     arguments passsed to the box
+            :param position:       position of the block
+            :param size:           size of the block
+            :param inputs:         side of the inputs
+            :param input_space:    space between the inputs
+            :param operations:     string of operations
+            :param text_configuration: arguments passed to the text
+            :param box_kwargs:     arguments passsed to the box
 
         """
         super().__init__(position)
@@ -41,7 +42,7 @@ class Divide(PredefinedComponent):
 
         self._box = Box(position, size, inputs={inputs: len(input_text), inputs + '_text': input_text,
                                                 inputs + '_space': input_space, inputs + '_text_space': 0.2},
-                        outputs={output: 1}, *args, **box_kwargs, **kwargs)
+                        outputs={output: 1}, text_configuration=text_configuration, *args, **box_kwargs, **kwargs)
 
         self.input = self._box.input_dict
         self.output = self._box.output_dict

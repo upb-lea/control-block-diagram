@@ -11,11 +11,11 @@ class Add(PredefinedComponent):
                  outputs: dict = dict(right=1), circle_kwargs: dict = dict(), *args, **kwargs):
         """
         Initializes an Add block
-            position:       position of the block
-            radius:         radius of the circle
-            inputs:         dictonary of inputs (s. circle)
-            outputs:        dictonary of outputs (s. circle)
-            circle_kwargs:  dictonary of arguments passed to the circle
+            :param position:       position of the block
+            :param radius:         radius of the circle
+            :param inputs:         dictonary of inputs (s. circle)
+            :param outputs:        dictonary of outputs (s. circle)
+            :param circle_kwargs:  dictonary of arguments passed to the circle
 
         """
         super().__init__(position)

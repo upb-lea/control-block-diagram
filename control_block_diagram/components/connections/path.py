@@ -10,23 +10,25 @@ class Path(Connection):
 
     def __init__(self, points: [Point], angles: (list, tuple) = None, arrow: bool = True, text: str = None,
                  text_position: str = 'middle', text_align: str = 'top', distance_x: float = 0.4,
-                 distance_y: float = 0.2, move_text: tuple = (0, 0), *args,
+                 distance_y: float = 0.2, move_text: tuple = (0, 0), text_configuration: dict = dict(), *args,
                  **kwargs):
         """
         Initilizes a path
-            points:         list of points
-            angles:         list of angles
-            arrow:          arrow at the end of a path
-            text:           text at a path
-            text_position:  position of the text
-            text_align:     align of the text
-            distance_x:     distance of the text to the connection in x direction
-            distance_y:     distance of the text to the connection in y direction
-            move_text:      free movement of the text
 
+            :param points:         list of points
+            :param angles:         list of angles
+            :param arrow:          arrow at the end of a path
+            :param text:           text at a path
+            :param text_position:  position of the text
+            :param text_align:     align of the text
+            :param distance_x:     distance of the text to the connection in x direction
+            :param distance_y:     distance of the text to the connection in y direction
+            :param move_text:      free movement of the text
+            :param text_configuration: arguments passed to the text
         """
-        super().__init__(points, arrow, text, text_position, text_align, distance_x, distance_y, move_text, *args,
-                         **kwargs)
+
+        super().__init__(points, arrow, text, text_position, text_align, distance_x, distance_y, move_text,
+                         text_configuration, *args, **kwargs)
         self._angles = angles
 
     def build(self, pic):

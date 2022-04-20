@@ -12,7 +12,7 @@ class PDFViewer:
     def __init__(self, pdf):
         """
         Initializes a pdf viewer for a certain pdf
-            pdf: pdf to be shown
+            :param pdf: pdf to be shown
         """
         self._pdf = pdf
         self._process = None

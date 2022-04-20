@@ -39,10 +39,11 @@ class Point:
     def __init__(self, x: float, y: float, direction: str = None):
         """
         Initilizes a point
-            x:          x coordinate of the point
-            y:          y coordinate of the point
-            direction:  direction of the point
+            :param x:          x coordinate of the point
+            :param y:          y coordinate of the point
+            :param direction:  direction of the point
         """
+
         self._coordinate = (x, y)
         self._direction = direction if direction in ['north', 'west', 'south', 'east'] else False
 
@@ -104,7 +105,7 @@ class Point:
 
     @staticmethod
     def get_mid(*points):
-        """calculate the middle between two points"""
+        """calculate the middle between multiple points"""
         x_mid = sum([p.x for p in points]) / len(points)
         y_mid = sum([p.y for p in points]) / len(points)
         return Point(x_mid, y_mid)
