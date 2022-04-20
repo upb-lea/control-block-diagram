@@ -47,11 +47,12 @@ class Text(Component):
         self._text = Text.split_string(text)    # split the text into lines
         self._len_text = len(self._text)        # get the number of lines
         self._position = position
+        self._move_text = text_configuration.get('move_text', (0, 0))
         self._size = size
 
         # set the position of the text
-        self._text_position = [TikZCoordinate(self._position.x,
-                                              self._position[1] + self._size[1] / 2 - (i + 1) / (self._len_text + 1) *
+        pos = self._position.add(*self._move_text)
+        self._text_position = [TikZCoordinate(pos.x, pos[1] + self._size[1] / 2 - (i + 1) / (self._len_text + 1) *
                                               self._size[1]) for i in range(self._len_text)]
         self._set_border(self.top_left, self.top_right, self.bottom_left, self.bottom_right)
 
@@ -66,6 +67,7 @@ class Text(Component):
     def define(self, **kwargs):
         """Function to change position and visual representation of the text afterwards"""
         self._position = kwargs.get('position', self._position)
+        self._move_text = kwargs.get('move_text', self._move_text)
         self._size = kwargs.get('size', self._size)
         self._font_size = kwargs.get('fontsize', self._font_size)
         self._font = kwargs.get('font', self._font)
@@ -73,8 +75,9 @@ class Text(Component):
         self._options = {'align': 'center', 'text width': str(self._size[0]) + 'cm', 'text': self._color,
                          'font': self._font_size + self._font, 'rotate': self._rotate}
 
-        top = self._position[1] + self._size[1] / 2
-        self._text_position = [TikZCoordinate(self._position.x, top - (i + 1) / (self._len_text + 1) * self._size[1])
+        pos = self._position.add(*self._move_text)
+        top = pos[1] + self._size[1] / 2
+        self._text_position = [TikZCoordinate(pos.x, top - (i + 1) / (self._len_text + 1) * self._size[1])
                                for i in range(self._len_text)]
 
     @staticmethod
@@ -108,5 +111,4 @@ class Text(Component):
         """Funtion to add the Latex code to the Latex document"""
         for text, pos in zip(self._text, self._text_position):
             if text != '':
-                print(self._options['font'])
                 pic.append(TikZNode(text=text, at=pos, handle='box', options=TikZOptions(**self._options)))

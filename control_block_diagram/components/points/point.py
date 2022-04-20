@@ -103,6 +103,8 @@ class Point:
         return Point(p1.x, p2.y)
 
     @staticmethod
-    def get_mid(p1, p2):
+    def get_mid(*points):
         """calculate the middle between two points"""
-        return Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2)
+        x_mid = sum([p.x for p in points]) / len(points)
+        y_mid = sum([p.y for p in points]) / len(points)
+        return Point(x_mid, y_mid)
