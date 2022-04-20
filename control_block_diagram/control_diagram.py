@@ -139,7 +139,7 @@ class ControllerDiagram:
             deleted after closing the window. The program will continue to run after the window is closed.
         """
 
-        if hasattr(__builtins__, '__IPYTHON__'):
+        if 'ipykernel' in sys.modules:
             if self._pdf_name is not None:
                 self._pdf_viewer = PDFViewerNB(self._pdf_name)
             else:
