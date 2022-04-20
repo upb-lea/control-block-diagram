@@ -6,6 +6,7 @@ from .components.component import Component
 import os
 import tempfile
 from .pdf_viewer import PDFViewer
+from .pdf_viewer import PDFViewerNB
 
 
 class ControllerDiagram:
@@ -13,6 +14,14 @@ class ControllerDiagram:
         This is the base class for all diagrams. A diagram is automatically set as active diagram after instantiation
         and all subsequent components are added to it. A diagram can finally be saved as a .tex or a .pdf file.
     """
+
+    @property
+    def filename(self):
+        """Returns the name of the PDF file"""
+        if self._pdf_name is not None:
+            return self._pdf_name
+        elif self._temp_file is not None:
+            return self._temp_file
 
     def __init__(self, packages: (tuple, list) = ('upgreek',), **configuration):
         """
@@ -107,7 +116,7 @@ class ControllerDiagram:
             for component in self._components:
                 component.build(pic)
 
-    def _build_temp(self):
+    def build_temp(self):
         """
              Creates a temporary PDF file to display it in the PDF Viewer.
         """
@@ -116,8 +125,9 @@ class ControllerDiagram:
         if self._doc is None:
             self._build()
         self._doc.generate_pdf(filename, compiler='pdflatex', clean_tex=True)
+        return self._temp_file
 
-    def _delete_temp(self):
+    def delete_temp(self):
         """
              Deletes the temporary PDF file.
         """
@@ -128,15 +138,24 @@ class ControllerDiagram:
             Displays the PDF file in the PDF Viewer. If it is a temporary PDF file, it will be created before and then
             deleted after closing the window. The program will continue to run after the window is closed.
         """
-        if self._pdf_name is not None:
+
+        if hasattr(__builtins__, '__IPYTHON__'):
+            if self._pdf_name is not None:
+                self._pdf_viewer = PDFViewerNB(self._pdf_name)
+            else:
+                self.build_temp()
+                self._pdf_viewer = PDFViewerNB(self._pdf_name)
+                self.delete_temp()
+
+        elif self._pdf_name is not None:
             self._pdf_viewer = PDFViewer(self._pdf_name)
             self._pdf_viewer.show_pdf()
 
         else:
-            self._build_temp()
+            self.build_temp()
             self._pdf_viewer = PDFViewer(self._temp_file)
             self._pdf_viewer.show_pdf()
-            self._delete_temp()
+            self.delete_temp()
 
     def open(self):
         """
@@ -147,7 +166,7 @@ class ControllerDiagram:
         if self._pdf_name is not None:
             self._pdf_viewer = PDFViewer(self._pdf_name)
         else:
-            self._build_temp()
+            self.build_temp()
             self._pdf_viewer = PDFViewer(self._temp_file)
 
         self._pdf_viewer.open_pdf()
@@ -158,7 +177,7 @@ class ControllerDiagram:
         """
         self._pdf_viewer.close_pdf()
         if self._temp_file is not None:
-            self._delete_temp()
+            self.delete_temp()
 
     def _get_filename(self):
         """
