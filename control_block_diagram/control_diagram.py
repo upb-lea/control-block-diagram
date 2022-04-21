@@ -140,12 +140,8 @@ class ControllerDiagram:
         """
 
         if 'ipykernel' in sys.modules:
-            if self._pdf_name is not None:
-                self._pdf_viewer = PDFViewerNB(self._pdf_name)
-            else:
-                self.build_temp()
-                self._pdf_viewer = PDFViewerNB(self._pdf_name)
-                self.delete_temp()
+            self._build_local()
+            return PDFViewerNB('ControlBlockDiagram.pdf')
 
         elif self._pdf_name is not None:
             self._pdf_viewer = PDFViewer(self._pdf_name)
@@ -156,6 +152,15 @@ class ControllerDiagram:
             self._pdf_viewer = PDFViewer(self._temp_file)
             self._pdf_viewer.show_pdf()
             self.delete_temp()
+
+    def _build_local(self):
+        self._local_name = os.getcwd() + 'ControlBlockDiagram.pdf'
+        if self._doc is None:
+            self._build()
+        self._doc.generate_pdf(self._local_name, compiler='pdflatex', clean_tex=True)
+
+    def _delete_local(self):
+        os.remove(self._local_name)
 
     def open(self):
         """
@@ -178,6 +183,12 @@ class ControllerDiagram:
         self._pdf_viewer.close_pdf()
         if self._temp_file is not None:
             self.delete_temp()
+
+    def __del__(self):
+        if self._temp_file is not None:
+            self.delete_temp()
+        if self._local_name is not None:
+            self._delete_local()
 
     def _get_filename(self):
         """
