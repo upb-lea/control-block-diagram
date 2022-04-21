@@ -40,6 +40,7 @@ class ControllerDiagram:
         self._pdf_viewer = None
         self._doc = None
         self._temp_file = None
+        self._size = (0, 0)
         self.set_document()
 
     def set_document(self):
@@ -98,12 +99,12 @@ class ControllerDiagram:
             Builds the pylatex document
         """
 
-        size = Component.get_size(self._components)  # Determines the size of the latex document
+        self.size = Component.get_size(self._components)  # Determines the size of the latex document
         # Creates the latex document
         self._doc = Document(page_numbers=False, geometry_options={'includeheadfoot': False,
                                                                    'top': '0.3cm', 'left': '0.3cm',
-                                                                   'paperwidth': str(size[0]) + 'cm',
-                                                                   'paperheight': str(size[1]) + 'cm'})
+                                                                   'paperwidth': str(self.size[0]) + 'cm',
+                                                                   'paperheight': str(self.size[1]) + 'cm'})
 
         # Adds the required latex packages to the document
         for package in self._packages:
@@ -142,15 +143,15 @@ class ControllerDiagram:
 
         if 'ipykernel' in sys.modules:
             self._build_local()
-            return PDFViewerNB('ControlBlockDiagram.pdf')
+            return PDFViewerNB('ControlBlockDiagram.pdf', size=(int(self.size[0] * 40), int(self.size[1] * 45)))
 
         elif self._pdf_name is not None:
-            self._pdf_viewer = PDFViewer(self._pdf_name)
+            self._pdf_viewer = PDFViewer(self._pdf_name, size=(int(self.size[0] * 40), int(self.size[1] * 45)))
             self._pdf_viewer.show_pdf()
 
         else:
             self.build_temp()
-            self._pdf_viewer = PDFViewer(self._temp_file)
+            self._pdf_viewer = PDFViewer(self._temp_file, size=(int(self.size[0] * 40), int(self.size[1] * 45)))
             self._pdf_viewer.show_pdf()
             self.delete_temp()
 
