@@ -34,6 +34,7 @@ class ControllerDiagram:
         self._configuration = dict()
         self._data_type = None
         self._pdf_name = None
+        self._local_name = None
         self._clean_tex = None
         self._components = []
         self._pdf_viewer = None
@@ -154,13 +155,19 @@ class ControllerDiagram:
             self.delete_temp()
 
     def _build_local(self):
-        self._local_name = os.getcwd() + 'ControlBlockDiagram.pdf'
+        """
+            Builds a PDF file in the current working directory
+        """
+        self._local_name = os.getcwd() + r'\ControlBlockDiagram'
         if self._doc is None:
             self._build()
         self._doc.generate_pdf(self._local_name, compiler='pdflatex', clean_tex=True)
 
     def _delete_local(self):
-        os.remove(self._local_name)
+        """
+            Delete the local file
+        """
+        os.remove(self._local_name + '.pdf')
 
     def open(self):
         """
@@ -185,10 +192,19 @@ class ControllerDiagram:
             self.delete_temp()
 
     def __del__(self):
+        """
+            Delete all temporary files
+        """
         if self._temp_file is not None:
-            self.delete_temp()
+            try:
+                self.delete_temp()
+            except FileNotFoundError:
+                pass
         if self._local_name is not None:
-            self._delete_local()
+            try:
+                self._delete_local()
+            except FileNotFoundError:
+                pass
 
     def _get_filename(self):
         """
