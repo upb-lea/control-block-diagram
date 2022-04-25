@@ -36,7 +36,7 @@ class CustomBlock(Block):
         points = []
         for p in self._points:
             points.extend([p.tikz, '--'])
-        points.append(self._points[0].tikz)
+        points.extend([self._points[0].tikz, '--', self._points[1].tikz])
         custom_block = TikZDraw(points, TikZOptions(*self._style_args, **self._tikz_options))
         pic.append(custom_block)
         super().build(pic)

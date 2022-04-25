@@ -70,7 +70,8 @@ class Triangle(Block):
     def build(self, pic):
         """Funtion to add the Latex code to the Latex document"""
         triangle = TikZDraw([self.top_left.tikz, '--', self.right.tikz, '--', self.bottom_left.tikz, '--',
-                             self.top_left.tikz], TikZOptions(*self._style_args, **self._tikz_options))
+                             self.top_left.tikz, '--', self.right.tikz],
+                            TikZOptions(*self._style_args, **self._tikz_options))
         pic.append(triangle)
         super().build(pic)
 

@@ -79,11 +79,14 @@ class Component:
 
     @staticmethod
     def get_border(components: (list, tuple) = ()):
-        left = min([c.border_left for c in components])
-        right = max([c.border_right for c in components])
-        top = max([c.border_top for c in components])
-        bottom = min([c.border_bottom for c in components])
-        return left, top, right, bottom
+        if len(components) == 0:
+            return 0, 0, 1, 1
+        else:
+            left = min([c.border_left for c in components])
+            right = max([c.border_right for c in components])
+            top = max([c.border_top for c in components])
+            bottom = min([c.border_bottom for c in components])
+            return left, top, right, bottom
 
 
 def set_document(doc):

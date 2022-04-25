@@ -40,6 +40,7 @@ class ControllerDiagram:
         self._pdf_viewer = None
         self._doc = None
         self._temp_file = None
+        self._changed = True
         self._size = (0, 0)
         self.set_document()
 
@@ -67,11 +68,13 @@ class ControllerDiagram:
             Adds a new component to a diagram.
                 component: Component or list of components to be added
         """
+
         if isinstance(component, (list, tuple)):
             for comp in component:
                 self.append(comp)
         else:
             self._components.append(component)
+            self._changed = True
 
     def save(self, *data_type):
         """
@@ -118,13 +121,15 @@ class ControllerDiagram:
             for component in self._components:
                 component.build(pic)
 
+        self._changed = False
+
     def build_temp(self):
         """
              Creates a temporary PDF file to display it in the PDF Viewer.
         """
         filename = tempfile.gettempdir() + r'\ControlBlockDiagram'
         self._temp_file = filename + '.pdf'
-        if self._doc is None:
+        if self._doc is None or self._changed:
             self._build()
         self._doc.generate_pdf(filename, compiler='pdflatex', clean_tex=True)
         return self._temp_file
@@ -161,7 +166,7 @@ class ControllerDiagram:
             Builds a PDF file in the current working directory
         """
         self._local_name = os.getcwd() + r'\ControlBlockDiagram'
-        if self._doc is None:
+        if self._doc is None or self._changed:
             self._build()
         self._doc.generate_pdf(self._local_name, compiler='pdflatex', clean_tex=True)
 
