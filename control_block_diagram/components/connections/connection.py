@@ -170,19 +170,19 @@ class Connection(Component):
     @staticmethod
     def connect_to_line(con, point, arrow: bool = True, text: (str, iter) = None,
                         text_position: (str, iter) = 'middle', text_align: (str, iter) = 'top', distance_x: float = 0.4,
-                        distance_y: float = 0.25, move_text: tuple = (0, 0), fill='black', draw=0.05, section=0,
+                        distance_y: float = 0.25, move_text: tuple = (0, 0), fill='black', radius=0.05, section=0,
                         text_configuration: dict = dict(), *args, **kwargs):
         """Function that conncets a line to a point"""
 
         if isinstance(con, (list, tuple)) and isinstance(point, (list, tuple)):
             if isinstance(text, (list, tuple)):
                 return [Connection.connect_to_line(con_, point_, arrow, text_, text_position, text_align,
-                                                   distance_x, distance_y, move_text, fill, draw, section,
+                                                   distance_x, distance_y, move_text, fill, radius, section,
                                                    text_configuration, *args, **kwargs)
                         for con_, point_, text_ in zip(con, point, text)]
             else:
                 return [Connection.connect_to_line(con_, point_, arrow, text, text_position, text_align,
-                                                   distance_x, distance_y, move_text, fill, draw, section,
+                                                   distance_x, distance_y, move_text, fill, radius, section,
                                                    text_configuration, *args, **kwargs)
                         for con_, point_ in zip(con, point)]
         else:
@@ -207,8 +207,8 @@ class Connection(Component):
             else:
                 raise Exception("Line and Point can't be connected")
 
-            if isinstance(draw, float):
-                circle = Circle(point_start, radius=draw, fill=fill, outputs={output: 1})
+            if isinstance(radius, float):
+                circle = Circle(point_start, radius=radius, fill=fill, outputs={output: 1})
                 point_start = circle.output[0]
 
             return Connection.connect(point_start, point, arrow=arrow, text=text,

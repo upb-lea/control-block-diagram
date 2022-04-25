@@ -18,7 +18,8 @@ class CustomBlock(Block):
         return self._input_left
 
     @input_left.setter
-    def input_left(self, inputs_left):
+    def input_left(self, inputs_left: [Point]):
+        """Set the left inputs"""
         if all(isinstance(inp, Point) for inp in inputs_left):
             self._input_left = inputs_left
 
@@ -28,7 +29,8 @@ class CustomBlock(Block):
         return self._input_top
 
     @input_top.setter
-    def input_top(self, inputs_top):
+    def input_top(self, inputs_top: [Point]):
+        """Set the top inputs"""
         if all(isinstance(inp, Point) for inp in inputs_top):
             self._input_top = inputs_top
 
@@ -38,7 +40,8 @@ class CustomBlock(Block):
         return self._input_right
 
     @input_right.setter
-    def input_right(self, inputs_right):
+    def input_right(self, inputs_right: [Point]):
+        """Set the right inputs"""
         if all(isinstance(inp, Point) for inp in inputs_right):
             self._input_right = inputs_right
 
@@ -48,7 +51,8 @@ class CustomBlock(Block):
         return self._input_bottom
 
     @input_bottom.setter
-    def input_bottom(self, inputs_bottom):
+    def input_bottom(self, inputs_bottom: [Point]):
+        """Set the bottom inputs"""
         if all(isinstance(inp, Point) for inp in inputs_bottom):
             self._input_bottom = inputs_bottom
 
@@ -57,20 +61,44 @@ class CustomBlock(Block):
         """Returns all outputs on the left side of a block as a list"""
         return self._output_left
 
+    @output_left.setter
+    def output_left(self, outputs_left: [Point]):
+        """Set the left outputs"""
+        if all(isinstance(inp, Point) for inp in outputs_left):
+            self._output_left = outputs_left
+
     @property
     def output_top(self):
         """Returns all outputs on the top side of a block as a list"""
         return self._output_top
+
+    @output_top.setter
+    def output_top(self, outputs_top: [Point]):
+        """Set the top outputs"""
+        if all(isinstance(inp, Point) for inp in outputs_top):
+            self._output_top = outputs_top
 
     @property
     def output_right(self):
         """Returns all outputs on the right side of a block as a list"""
         return self._output_right
 
+    @output_right.setter
+    def output_right(self, outputs_right: [Point]):
+        """Set the right outputs"""
+        if all(isinstance(inp, Point) for inp in outputs_right):
+            self._output_right = outputs_right
+
     @property
     def output_bottom(self):
         """Returns all outputs on the bottom side of a block as a list"""
         return self._output_bottom
+
+    @output_bottom.setter
+    def output_bottom(self, outputs_bottom: [Point]):
+        """Set the bottom outputs"""
+        if all(isinstance(inp, Point) for inp in outputs_bottom):
+            self._output_bottom = outputs_bottom
 
     def __init__(self, points: [Point], text: (Text, str) = None, text_configuration: dict = dict(), level: int = 0,
                  *args, **kwargs):
