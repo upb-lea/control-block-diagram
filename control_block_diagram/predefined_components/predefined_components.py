@@ -17,10 +17,10 @@ class PredefinedComponent:
     @input.setter
     def input(self, inputs):
         """Sets the inputs of a predefined component"""
-        self._input_left = inputs['left']
-        self._input_top = inputs['top']
-        self._input_right = inputs['right']
-        self._input_bottom = inputs['bottom']
+        self._input_left = inputs.get('left', [])
+        self._input_top = inputs.get('top', [])
+        self._input_right = inputs.get('right', [])
+        self._input_bottom = inputs.get('bottom', [])
 
     @property
     def input_dict(self):
@@ -75,10 +75,10 @@ class PredefinedComponent:
     @output.setter
     def output(self, outputs):
         """Sets the outputs of a predefined component"""
-        self._output_left = outputs['left']
-        self._output_top = outputs['top']
-        self._output_right = outputs['right']
-        self._output_bottom = outputs['bottom']
+        self._output_left = outputs.get('left', [])
+        self._output_top = outputs.get('top', [])
+        self._output_right = outputs.get('right', [])
+        self._output_bottom = outputs.get('bottom', [])
 
     @property
     def output_dict(self):
