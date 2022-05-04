@@ -75,7 +75,7 @@ class Component:
     def get_size(components: (list, tuple) = ()):
         """Calculates the size of a document"""
         left, top, right, bottom = Component.get_border(components)
-        return (right - left) + 2, (top - bottom) + 2
+        return (right - left) * 1.2, (top - bottom) * 1.2
 
     @staticmethod
     def get_border(components: (list, tuple) = ()):
