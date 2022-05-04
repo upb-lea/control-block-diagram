@@ -50,7 +50,7 @@ class ElectricMotor(PredefinedComponent):
                                self._box.bottom_right.add(self._size * 0.05, -self._size * 0.1)],
                               angles=[{'in': 90, 'out': 315}, {'in': 45, 'out': -90}],
                               text=r'$T, \omega_{\mathrm{me}}$', text_align='right', distance_x=size * 0.25,
-                              level=level, text_configuration=text_configuration, *args, **kwargs)
+                              level=level, text_configuration=text_configuration, move_text=(0.4, 0), *args, **kwargs)
 
         elif orientation == 'top':
             self._box = Box([self._circle.output_top[0].add_y(box_size), self._circle.output_top[1]], *args, **kwargs)
@@ -88,7 +88,7 @@ class ElectricMotor(PredefinedComponent):
                                self._box.bottom_left.sub(self._size * 0.05, self._size * 0.1)],
                               angles=[{'in': 90, 'out': 215}, {'in': 135, 'out': -90}],
                               text=r'$T, \omega_{\mathrm{me}}$', text_align='left', distance_x=size * 0.25, level=level,
-                              text_configuration=text_configuration, *args, **kwargs)
+                              text_configuration=text_configuration, move_text=(-0.4, 0), *args, **kwargs)
 
         self.input = self._circle.input_dict
         self.output = self._circle_2.output_dict
