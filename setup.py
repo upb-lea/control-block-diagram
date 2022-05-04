@@ -11,7 +11,7 @@ with open("README.md", "r") as fh:
     
 setuptools.setup(
       name='control_block_diagram',
-      version='0.4.3',
+      version='0.4.4',
       description='Visualization of controller block diagrams',
       packages=setuptools.find_packages(),
       install_requires=requirements,
