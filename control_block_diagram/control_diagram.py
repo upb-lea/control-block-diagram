@@ -183,10 +183,10 @@ class ControllerDiagram:
             the temporary PDF file is deleted.
         """
         if self._pdf_name is not None:
-            self._pdf_viewer = PDFViewer(self._pdf_name)
+            self._pdf_viewer = PDFViewer(self._pdf_name, size=(int(self.size[0] * 40), int(self.size[1] * 45)))
         else:
             self.build_temp()
-            self._pdf_viewer = PDFViewer(self._temp_file)
+            self._pdf_viewer = PDFViewer(self._temp_file, size=(int(self.size[0] * 40), int(self.size[1] * 45)))
 
         self._pdf_viewer.open_pdf()
 
