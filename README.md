@@ -61,3 +61,7 @@ pip install -e .
 # or alternatively
 pip install git+https://github.com/upb-lea/control-block-diagram
 ```
+
+You also need a latex compiler such as pdfLaTex to create a PDF file.  For example, you can get this from the latex distribution [MiKTeX](https://miktex.org/).
+
+
