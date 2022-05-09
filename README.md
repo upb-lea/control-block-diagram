@@ -14,6 +14,11 @@ usual building blocks, i.e., PI-Controllers, Adders, Multiplier. It is also poss
 define own blocks. 
 
 ## Getting Started
+
+The easiest way to get started with the ControlBlockDiagram Toolbox is to play around with the Hands On Jupyter Notebook. There the most important functions are explained and demonstrated with simple examples.
+
+[Hands On Jupyter Notebook](https://github.com/upb-lea/control-block-diagram/blob/main/examples/Control_Block_Diagram_Hands_On.ipynb)
+
 A basic routine is as simple as:
 ```py
 from control_block_diagram import ControllerDiagram
