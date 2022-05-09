@@ -91,7 +91,6 @@ class ControllerDiagram:
         # Opens the window for selecting the folder and entering the file name and generates the desired file
         for filename in self._get_filename():
             name, data_type = filename.split('.', 1)
-            print(data_type)
             if data_type == 'pdf':
                 self._doc.generate_pdf(name, compiler='pdflatex', clean_tex=self._clean_tex)
                 self._pdf_name = filename
@@ -229,7 +228,6 @@ class ControllerDiagram:
                 filetypes = (('TeX Document (*.tex)', '*.tex'), ('All Files', '*.*'))
                 yield filedialog.asksaveasfilename(initialdir='/', title='Save as', filetypes=filetypes,
                                                    defaultextension='.tex')
-
             elif data_type not in ['pdf', 'tex']:
                 raise ValueError(
                     f'The file type {data_type} is not supported. Use the Portable Document Format (pdf) or Tex'
