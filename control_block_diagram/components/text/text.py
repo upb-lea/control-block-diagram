@@ -35,7 +35,8 @@ class Text(Component):
                 :param text:               string of the text
                 :param position:           position of the text
                 :param size:               size of the text box
-                :param text_configuration: visual presentation of the text (possible keys: text_color, fontsize, rotate)
+                :param text_configuration: visual presentation of the text (possible keys: text_color, fontsize, rotate,
+                                           align)
                 :param level:              level of the text
         """
 
@@ -61,7 +62,8 @@ class Text(Component):
         self._font_size = text_configuration.get('fontsize', self._configuration['fontsize'])
         self._font = text_configuration.get('font', self._configuration['font'])
         self._rotate = text_configuration.get('rotate', 0)
-        self._options = {'align': 'center', 'text width': str(self._size[0]) + 'cm', 'text': self._color,
+        self._align = text_configuration.get('align', 'center')
+        self._options = {'align': self._align, 'text width': str(self._size[0]) + 'cm', 'text': self._color,
                          'font': self._font_size + self._font, 'rotate': self._rotate}
 
     def define(self, **kwargs):
@@ -72,7 +74,8 @@ class Text(Component):
         self._font_size = kwargs.get('fontsize', self._font_size)
         self._font = kwargs.get('font', self._font)
         self._rotate = kwargs.get('rotate', self._rotate)
-        self._options = {'align': 'center', 'text width': str(self._size[0]) + 'cm', 'text': self._color,
+        self._align = kwargs.get('align', self._align)
+        self._options = {'align': self._align, 'text width': str(self._size[0]) + 'cm', 'text': self._color,
                          'font': self._font_size + self._font, 'rotate': self._rotate}
 
         pos = self._position.add(*self._move_text)
