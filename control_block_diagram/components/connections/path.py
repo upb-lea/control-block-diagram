@@ -36,9 +36,10 @@ class Path(Connection):
         with pic.create(TikZDraw()) as path:
             path.append(self.tikz[0])
             for point, angle in zip(self.tikz[1:-1], self._angles):
-                path.append(TikZUserPath('edge', TikZOptions(self._line_width, self._line_style, self._draw, **angle)))
+                path.append(TikZUserPath('edge', TikZOptions(*self._args, **angle, **self._style_options)))
                 path.append(point)
                 path.append(point)
-            path.append(TikZUserPath('edge', TikZOptions(self._draw, self._line_width, self._line_style,
-                                                         self._tikz_option, **self._angles[-1])))
+
+            path.append(TikZUserPath('edge', TikZOptions(self._tikz_option, *self._args, **self._angles[-1],
+                                                         **self._style_options)))
             path.append(self._points[-1].tikz)

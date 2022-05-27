@@ -102,17 +102,6 @@ class Connection(Component):
         pic.append(custom_block)
         super().build(pic)
 
-        #with pic.create(TikZDraw()) as path:
-
-
-            #path.append(self.tikz[0])
-            #for point in self.tikz[1:-1]:
-            #    path.append(TikZUserPath('edge', TikZOptions(*self._args, **self._style_options)))
-            #    path.append(point)
-            #    path.append(point)
-            #path.append(TikZUserPath('edge', TikZOptions(self._tikz_option, *self._args, **self._style_options)))
-            #path.append(self._points[-1].tikz)
-
     def get_text_position(self, text_pos, align, distance_x, distance_y, move_text):
         """Function to calculate the position of the text"""
         if isinstance(text_pos, (list, tuple)):
