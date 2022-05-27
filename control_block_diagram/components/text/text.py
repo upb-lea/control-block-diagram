@@ -36,7 +36,7 @@ class Text(Component):
                 :param position:           position of the text
                 :param size:               size of the text box
                 :param text_configuration: visual presentation of the text (possible keys: text_color, fontsize, rotate,
-                                           align)
+                                           align, line_spacing)
                 :param level:              level of the text
         """
 
@@ -50,11 +50,6 @@ class Text(Component):
         self._position = position
         self._move_text = text_configuration.get('move_text', (0, 0))
         self._size = size
-
-        # set the position of the text
-        pos = self._position.add(*self._move_text)
-        self._text_position = [TikZCoordinate(pos.x, pos[1] + self._size[1] / 2 - (i + 1) / (self._len_text + 1) *
-                                              self._size[1]) for i in range(self._len_text)]
         self._set_border(self.top_left, self.top_right, self.bottom_left, self.bottom_right)
 
         # set the configuration of the text
@@ -63,8 +58,20 @@ class Text(Component):
         self._font = text_configuration.get('font', self._configuration['font'])
         self._rotate = text_configuration.get('rotate', 0)
         self._align = text_configuration.get('align', 'center')
+        self._line_spacing = text_configuration.get('line_spacing', None)
         self._options = {'align': self._align, 'text width': str(self._size[0]) + 'cm', 'text': self._color,
                          'font': self._font_size + self._font, 'rotate': self._rotate}
+
+        # set the position of the text
+        pos = self._position.add(*self._move_text)
+        if self._line_spacing is None:
+            self._text_position = [TikZCoordinate(pos.x, pos[1] + self._size[1] / 2 - (i + 1) / (self._len_text + 1) *
+                                                  self._size[1]) for i in range(self._len_text)]
+        else:
+            text_height = self._line_spacing * (self._len_text - 1)
+            start_pos = pos.y + text_height / 2
+            self._text_position = [TikZCoordinate(pos.x, start_pos - self._line_spacing * i) for i in
+                                   range(self._len_text)]
 
     def define(self, **kwargs):
         """Function to change position and visual representation of the text afterwards"""
@@ -75,13 +82,20 @@ class Text(Component):
         self._font = kwargs.get('font', self._font)
         self._rotate = kwargs.get('rotate', self._rotate)
         self._align = kwargs.get('align', self._align)
+        self._line_spacing = kwargs.get('line_spacing', self._line_spacing)
         self._options = {'align': self._align, 'text width': str(self._size[0]) + 'cm', 'text': self._color,
                          'font': self._font_size + self._font, 'rotate': self._rotate}
 
+        # set the position of the text
         pos = self._position.add(*self._move_text)
-        top = pos[1] + self._size[1] / 2
-        self._text_position = [TikZCoordinate(pos.x, top - (i + 1) / (self._len_text + 1) * self._size[1])
-                               for i in range(self._len_text)]
+        if self._line_spacing is None:
+            self._text_position = [TikZCoordinate(pos.x, pos[1] + self._size[1] / 2 - (i + 1) / (self._len_text + 1) *
+                                                  self._size[1]) for i in range(self._len_text)]
+        else:
+            text_height = self._line_spacing * (self._len_text - 1)
+            start_pos = pos.y + text_height / 2
+            self._text_position = [TikZCoordinate(pos.x, start_pos - self._line_spacing * i) for i in
+                                   range(self._len_text)]
 
     @staticmethod
     def split_string(string: str):
