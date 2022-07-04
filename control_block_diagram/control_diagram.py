@@ -4,6 +4,7 @@ from tkinter import filedialog
 from tkinter import *
 from .components.component import Component
 import os
+import sys
 import tempfile
 from .pdf_viewer import PDFViewer
 from .pdf_viewer import PDFViewerNB
@@ -90,7 +91,7 @@ class ControllerDiagram:
 
         # Opens the window for selecting the folder and entering the file name and generates the desired file
         for filename in self._get_filename():
-            name, data_type = filename.split('.', 1)
+            name, data_type = filename.rsplit('.', 1)
             if data_type == 'pdf':
                 self._doc.generate_pdf(name, compiler='pdflatex', clean_tex=self._clean_tex)
                 self._pdf_name = filename
