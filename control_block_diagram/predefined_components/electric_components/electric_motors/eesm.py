@@ -7,7 +7,7 @@ class EESM(ElectricMotor):
     """
 
     def __init__(self, position, size=1.5, input: str = 'top', output: str = 'left', orientation: str = 'bottom',
-                 input_space: float = 0.3, input_e: str = 'right', *args, **kwargs):
+                 input_space: float = 0.3, *args, **kwargs):
         """
             :param position:       position of the motor
             :param size:           size of the motor
@@ -18,5 +18,4 @@ class EESM(ElectricMotor):
             :param input_e:        input of the u_e voltage
         """
 
-        super().__init__(position, 'EESM', size, input, 3, output, orientation, input_space,
-                         additional_inputs={input_e: 2, input_e + '_space': input_space}, *args, **kwargs)
+        super().__init__(position, 'EESM', size, input, 5, output, orientation, input_space, *args, **kwargs)
