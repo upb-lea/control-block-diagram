@@ -200,9 +200,13 @@ class ControllerDiagram:
         """
             Closes the PDF Viewer and deletes the temporary PDF file if necessary.
         """
-        self._pdf_viewer.close_pdf()
-        if self._temp_file is not None:
-            self.delete_temp()
+        if 'ipykernel' in sys.modules:
+            if self._temp_file is not None:
+                self.delete_temp()
+        else:
+            self._pdf_viewer.close_pdf()
+            if self._temp_file is not None:
+                self.delete_temp()
 
     def __del__(self):
         """
