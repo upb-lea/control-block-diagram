@@ -189,13 +189,14 @@ class ControllerDiagram:
             self._build_local()
             display(PDFViewerNB('ControlBlockDiagram.pdf', size=(int(min(900, self.size[0] * 50 + 50)),
                                                                 int(self.size[1] * 50 + 50))))
-        elif self._pdf_name is not None:
-            self._pdf_viewer = PDFViewer(self._pdf_name, size=(int(self.size[0] * 40), int(self.size[1] * 45)))
         else:
-            self.build_temp()
-            self._pdf_viewer = PDFViewer(self._temp_file, size=(int(self.size[0] * 40), int(self.size[1] * 45)))
+            if self._pdf_name is not None:
+                self._pdf_viewer = PDFViewer(self._pdf_name, size=(int(self.size[0] * 40), int(self.size[1] * 45)))
+            else:
+                self.build_temp()
+                self._pdf_viewer = PDFViewer(self._temp_file, size=(int(self.size[0] * 40), int(self.size[1] * 45)))
 
-        self._pdf_viewer.open_pdf()
+            self._pdf_viewer.open_pdf()
 
     def close(self):
         """
