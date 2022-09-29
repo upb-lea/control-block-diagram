@@ -6,6 +6,7 @@ from .components.component import Component
 import os
 import sys
 import tempfile
+from IPython.display import display
 from .pdf_viewer import PDFViewer
 from .pdf_viewer import PDFViewerNB
 
@@ -149,8 +150,8 @@ class ControllerDiagram:
 
         if 'ipykernel' in sys.modules:
             self._build_local()
-            return PDFViewerNB('ControlBlockDiagram.pdf', size=(int(min(900, self.size[0] * 50 + 50)),
-                                                                int(self.size[1] * 50 + 50)))
+            display(PDFViewerNB('ControlBlockDiagram.pdf', size=(int(min(900, self.size[0] * 50 + 50)),
+                                                                int(self.size[1] * 50 + 50))))
 
         elif self._pdf_name is not None:
             self._pdf_viewer = PDFViewer(self._pdf_name, size=(int(self.size[0] * 40), int(self.size[1] * 45)))
@@ -186,8 +187,8 @@ class ControllerDiagram:
         
         if 'ipykernel' in sys.modules:
             self._build_local()
-            return PDFViewerNB('ControlBlockDiagram.pdf', size=(int(min(900, self.size[0] * 50 + 50)),
-                                                                int(self.size[1] * 50 + 50)))
+            display(PDFViewerNB('ControlBlockDiagram.pdf', size=(int(min(900, self.size[0] * 50 + 50)),
+                                                                int(self.size[1] * 50 + 50))))
         elif self._pdf_name is not None:
             self._pdf_viewer = PDFViewer(self._pdf_name, size=(int(self.size[0] * 40), int(self.size[1] * 45)))
         else:
