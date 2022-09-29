@@ -9,6 +9,9 @@ class PDFViewerNB:
     def _repr_latex_(self):
         return r'\includegraphics[width=1.0\textwidth]{{{0}}}'.format(self.pdf)
     
+    def open(self):
+        pass
+    
     def close(self):
         pass
  
