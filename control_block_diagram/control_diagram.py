@@ -183,7 +183,12 @@ class ControllerDiagram:
             the background so that the program flow is not interrupted. The window is closed by the close method and
             the temporary PDF file is deleted.
         """
-        if self._pdf_name is not None:
+        
+        if 'ipykernel' in sys.modules:
+            self._build_local()
+            return PDFViewerNB('ControlBlockDiagram.pdf', size=(int(min(900, self.size[0] * 50 + 50)),
+                                                                int(self.size[1] * 50 + 50)))
+        elif self._pdf_name is not None:
             self._pdf_viewer = PDFViewer(self._pdf_name, size=(int(self.size[0] * 40), int(self.size[1] * 45)))
         else:
             self.build_temp()
