@@ -167,8 +167,7 @@ class ControllerDiagram:
         """
             Builds a PDF file in the current working directory
         """
-        self._local_name = r'ControlBlockDiagram' #os.getcwd() + r'\ControlBlockDiagram'
-        print(self._local_name)
+        self._local_name = os.getcwd() + r'ControlBlockDiagram'
         if self._doc is None or self._changed:
             self._build()
         self._doc.generate_pdf(self._local_name, compiler='pdflatex', clean_tex=True)
