@@ -150,7 +150,7 @@ class ControllerDiagram:
 
         if 'ipykernel' in sys.modules:
             self._build_local()
-            display(PDFViewerNB('ControlBlockDiagram.pdf', size=(int(min(900, self.size[0] * 50 + 50)),
+            display(PDFViewerNB(self._local_name, size=(int(min(900, self.size[0] * 50 + 50)),
                                                                 int(self.size[1] * 50 + 50))))
 
         elif self._pdf_name is not None:
@@ -167,7 +167,7 @@ class ControllerDiagram:
         """
             Builds a PDF file in the current working directory
         """
-        self._local_name = os.getcwd() + r'\ControlBlockDiagram'
+        self._local_name = os.getcwd() + r'ControlBlockDiagram'
         if self._doc is None or self._changed:
             self._build()
         self._doc.generate_pdf(self._local_name, compiler='pdflatex', clean_tex=True)
