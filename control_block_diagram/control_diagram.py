@@ -150,7 +150,7 @@ class ControllerDiagram:
 
         if 'ipykernel' in sys.modules:
             self._build_local()
-            display(PDFViewerNB('ControlBlockDiagram.pdf', size=(int(min(900, self.size[0] * 50 + 50)),
+            display(PDFViewerNB(self._local_name, size=(int(min(900, self.size[0] * 50 + 50)),
                                                                 int(self.size[1] * 50 + 50))))
 
         elif self._pdf_name is not None:
