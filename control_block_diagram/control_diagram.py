@@ -167,11 +167,10 @@ class ControllerDiagram:
         """
             Builds a PDF file in the current working directory
         """
-        self._local_name = r'\ControlBlockDiagram' #os.getcwd() + r'\ControlBlockDiagram'
+        self._local_name = r'ControlBlockDiagram' #os.getcwd() + r'\ControlBlockDiagram'
         print(self._local_name)
         if self._doc is None or self._changed:
             self._build()
-        print(self._local_name)
         self._doc.generate_pdf(self._local_name, compiler='pdflatex', clean_tex=True)
 
     def _delete_local(self):
