@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "control-block-diagram"
+version = "0.0.1"
+authors = [
+  { name="Felix Book", email="64723297+fbook98@users.noreply.github.com" },
+]
+description = "Python Toolbox to draw Control Block Diagrams"
+readme = "README.md"
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.urls]
+"Homepage" = "https://github.com/upb-lea/control-block-diagram"
+"Bug Tracker" = "https://github.com/upb-lea/control-block-diagram/issues"
