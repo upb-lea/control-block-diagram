@@ -52,6 +52,8 @@ There are some examples in the examples folder:
 
 ## Installation
 
+- Install from PyPI:
+>>> pip install control-block-diagram
 
 - Install from GitHub source:
 
